@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: first-microservice
+server:
+  port: 9090
