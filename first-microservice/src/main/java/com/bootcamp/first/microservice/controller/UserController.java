@@ -41,12 +41,12 @@ public class UserController {
 	}
 	
 	@GetMapping("/{id}")
-	public UserDto getUserById(@PathVariable String id) {
+	public UserDto getUserById(@PathVariable Integer id) {
 		Optional<UserDto> userResponse = users.stream()
 			.filter(user -> user != null && id.equals(user.getId()))
 			.findFirst()
 			;
-		return userResponse.orElseThrow(() -> new UserNotFoundException("Unknown"));
+		return userResponse.orElseThrow(() -> new UserNotFoundException(id));
 	}
 	
 }
