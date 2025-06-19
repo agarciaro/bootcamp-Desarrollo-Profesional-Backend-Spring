@@ -6,7 +6,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import com.course.bootcamp.model.Restaurant;
 
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 @SpringBootApplication
