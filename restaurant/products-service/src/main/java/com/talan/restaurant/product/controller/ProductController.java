@@ -1,7 +1,5 @@
 package com.talan.restaurant.product.controller;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -60,9 +58,9 @@ public class ProductController {
 	
 	@DeleteMapping("/{id}")
 	@ResponseStatus(HttpStatus.OK)
-	public List<ProductDto> deleteProduct(@PathVariable Long id) {
+	public void deleteProduct(@PathVariable Long id) {
 		log.info("Calling deleteProduct");
-		return productsService.getAll();
+		productsService.delete(id);
 	}
 	
 	
