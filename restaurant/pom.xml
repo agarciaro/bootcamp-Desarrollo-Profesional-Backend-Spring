@@ -32,6 +32,7 @@
 		<module>products-service</module>
 		<module>inventory-service</module>
 		<module>orders-service</module>
+		<module>shared-lib</module>
 	</modules>
 
 	<dependencyManagement>
@@ -65,6 +66,28 @@
 				<artifactId>mapstruct-processor</artifactId>
 				<version>${mapstruct.version}</version>
 				<scope>provided</scope>
+			</dependency>
+
+			<!-- Internal dependency management-->
+			<dependency>
+				<groupId>com.talan.bootcamp</groupId>
+				<artifactId>shared-lib</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.talan.bootcamp</groupId>
+				<artifactId>products-service</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.talan.bootcamp</groupId>
+				<artifactId>inventory-service</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.talan.bootcamp</groupId>
+				<artifactId>orders-service</artifactId>
+				<version>${project.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
