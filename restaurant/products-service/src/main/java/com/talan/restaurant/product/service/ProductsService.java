@@ -13,4 +13,6 @@ public interface ProductsService {
 	public ProductDto update(ProductDto product);
 	public void delete(Long id);
 	
+	public boolean getAvailability(String sku);
+	
 }
