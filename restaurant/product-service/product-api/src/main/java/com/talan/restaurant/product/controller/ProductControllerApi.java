@@ -1,6 +1,5 @@
 package com.talan.restaurant.product.controller;
 
-import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -10,7 +9,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 
 import com.talan.restaurant.product.dto.ProductDto;
 
-@FeignClient(name = "product-service", path = "/api/products")
+//@FeignClient(name = "product-service", path = "/api/products")
 public interface ProductControllerApi {
 	
 	@GetMapping
@@ -27,5 +26,7 @@ public interface ProductControllerApi {
 	
 	@DeleteMapping("/{id}")
 	void deleteProduct(Long id);
+
+	
 
 }

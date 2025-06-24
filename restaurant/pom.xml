@@ -30,10 +30,10 @@
 	<modules>
 		<module>discovery-service</module>
 		<module>api-gateway</module>
-		<module>products-service</module>
+		<module>shared-lib</module>
+		<module>product-service</module>
 		<module>inventory-service</module>
 		<module>orders-service</module>
-		<module>shared-lib</module>
 	</modules>
 
 	<dependencyManagement>
@@ -84,9 +84,10 @@
 			</dependency>
 			<dependency>
 				<groupId>com.talan.bootcamp</groupId>
-				<artifactId>products-service</artifactId>
+				<artifactId>product-service</artifactId>
 				<version>${project.version}</version>
 			</dependency>
+			
 			<dependency>
 				<groupId>com.talan.bootcamp</groupId>
 				<artifactId>inventory-service</artifactId>
@@ -95,6 +96,17 @@
 			<dependency>
 				<groupId>com.talan.bootcamp</groupId>
 				<artifactId>orders-service</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.talan.bootcamp</groupId>
+				<artifactId>product-api</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.talan.bootcamp</groupId>
+				<artifactId>product-lib</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 		</dependencies>
