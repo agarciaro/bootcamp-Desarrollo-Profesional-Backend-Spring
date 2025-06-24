@@ -58,7 +58,20 @@
 			<scope>provided</scope>
 		</dependency>
 
-		
+		<!-- Resilience4j Circuit Breaker -->
+		<!-- Spring Retry -->
+		<dependency>
+			<groupId>org.springframework.retry</groupId>
+			<artifactId>spring-retry</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.github.resilience4j</groupId>
+			<artifactId>resilience4j-spring-boot3</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.github.resilience4j</groupId>
+			<artifactId>resilience4j-circuitbreaker</artifactId>
+		</dependency>
 
 		<!-- Feign client-->
 		<dependency>
