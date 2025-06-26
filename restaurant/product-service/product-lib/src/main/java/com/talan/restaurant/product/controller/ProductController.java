@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,6 +40,7 @@ public class ProductController implements ProductControllerApi {
 		@ApiResponse(responseCode = "500", description = "Generic unhandled error")
 	})
 	@ResponseStatus(HttpStatus.OK)
+	@PreAuthorize("hasRole('USER')")
 	public Page<ProductDto> getAllProducts(@PageableDefault(size = 10, sort = "id") Pageable pageable) {
 		log.info("Calling getAllProducts");
 		return productsService.getAll(pageable);
@@ -75,6 +77,7 @@ public class ProductController implements ProductControllerApi {
 	@Override
 	@DeleteMapping("/{id}")
 	@ResponseStatus(HttpStatus.OK)
+	@PreAuthorize("hasRole('ADMIN')")
 	public void deleteProduct(@PathVariable Long id) {
 		log.info("Calling deleteProduct");
 		productsService.delete(id);
