@@ -18,7 +18,7 @@ public class Lec02Zip {
                 .map(t -> new Car(t.getT1(), t.getT2(), t.getT3()))
                 .subscribe(Util.createSubscriber());
         
-        log.info("Aquí estoy");
+        log.info("Here I am");
 
         Util.sleepSeconds(5);
     }

@@ -19,7 +19,7 @@ public class Lec01Merge {
 	
 	private static void demo1() {
 		Flux.merge(producer1(), producer2(), producer3())
-			.take(2)
+			.take(6)
 			.subscribe(Util.createSubscriber());
 	}
 	

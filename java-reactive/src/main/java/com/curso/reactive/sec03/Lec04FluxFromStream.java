@@ -13,8 +13,8 @@ public class Lec04FluxFromStream {
         var list = List.of(1,2,3,4);
         var stream = list.stream();
 
-//        stream.forEach(System.out::println);
-//        stream.forEach(System.out::println);
+        //stream.forEach(System.out::println);
+        //stream.forEach(System.out::println);
 
         var flux = Flux.fromStream(list::stream);
 

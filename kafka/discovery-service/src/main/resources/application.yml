@@ -1,0 +1,32 @@
+server:
+  port: 8761
+
+spring:
+  application:
+    name: discovery-service
+
+# Eureka Server Configuration
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    # Disable client behavior as this is a server
+    register-with-eureka: false
+    fetch-registry: false
+    service-url:
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+  server:
+    # Enable self-preservation mode
+    enable-self-preservation: false
+    # Eviction interval in milliseconds
+    eviction-interval-timer-in-ms: 1000
+
+# Management endpoints for monitoring
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always 

@@ -12,16 +12,16 @@ public class Lec07FluxVsList {
 
 	public static void main(String[] args) {
 
-//		var list = NameGenerator.getNamesList(10);
-//		log.info("{}",list);
+		//var list = NameGenerator.getNamesList(10);
+		//log.info("{}",list);
 		
 		var subscriber = new SubscriberImpl();
 		NameGenerator.getNamesFlux(10)
 			.subscribe(subscriber);
 		
 		subscriber.getSubscription().request(3);
-		subscriber.getSubscription().cancel();
-		subscriber.getSubscription().request(3);
+		//subscriber.getSubscription().cancel();
+		subscriber.getSubscription().request(9);
 
 	}
 

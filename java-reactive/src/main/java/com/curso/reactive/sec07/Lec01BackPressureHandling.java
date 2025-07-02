@@ -28,11 +28,14 @@ public class Lec01BackPressureHandling {
 			.limitRate(5)
 			.publishOn(Schedulers.boundedElastic())
 			.map(Lec01BackPressureHandling::timeConsumingTask)
+			.publishOn(Schedulers.immediate())
 			.subscribe(Util.createSubscriber("sub1"));
 		
 		producer
         .take(100)
-        .publishOn(Schedulers.boundedElastic())
+        .publishOn(Schedulers.single())
+        .subscribeOn(Schedulers.boundedElastic())
+        .map(Lec01BackPressureHandling::timeConsumingTask)
         .subscribe(Util.createSubscriber("sub2"));
 		
 		Util.sleepSeconds(60);
@@ -40,6 +43,7 @@ public class Lec01BackPressureHandling {
 	}
 	
 	private static int timeConsumingTask(int i) {
+		log.info("Sleeping");
         Util.sleepSeconds(1);
         return i;
     }
