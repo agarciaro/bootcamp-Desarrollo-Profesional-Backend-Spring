@@ -1,6 +1,6 @@
 # Spring Boot Microservices Demo
 
-A comprehensive microservices demonstration project built with Spring Boot 3.5.0 and Maven, designed for educational purposes in a bootcamp environment.
+A comprehensive microservices demonstration project built with Spring Boot 3.5.3, Spring Cloud 2025.0.0 and Maven, designed for educational purposes in a bootcamp environment.
 
 ## 🏗️ Architecture Overview
 
@@ -18,6 +18,7 @@ This project demonstrates a complete **reactive microservices architecture** wit
 
 ### Communication Patterns
 - **Reactive REST APIs** - Non-blocking synchronous communication between services using Spring WebFlux
+- **WebClient** - Reactive HTTP client for service-to-service communication
 - **Kafka** - Asynchronous event-driven communication
 - **Service Discovery** - Dynamic service location via Eureka
 - **Reactive Programming** - Using Project Reactor (Mono/Flux) for non-blocking operations
@@ -30,6 +31,7 @@ Before running this project, ensure you have the following installed:
 - **Maven 3.6** or higher
 - **Apache Kafka** (for event-driven communication)
 - **Git** (for version control)
+- **Docker** (optional, for running with Docker Compose)
 
 ## 📋 Setup Instructions
 
@@ -43,7 +45,7 @@ cd kafka
 Make sure Kafka is running on `localhost:9092`. You can use Docker:
 
 ```bash
-# Using Docker Compose (create docker-compose.yml if needed)
+# Using Docker Compose
 docker-compose up -d
 
 # Or start Kafka manually
@@ -84,6 +86,34 @@ cd ../notification-service
 mvn spring-boot:run
 ```
 
+### 5. Running with Scripts (Recommended)
+The project includes scripts to facilitate execution:
+
+```bash
+# Local development (main services only)
+start-local-dev.bat
+
+# All services
+start-all-services.bat
+
+# Test notification-service only
+test-notification-service.bat
+```
+
+### 6. Running with Docker Compose
+To run the entire stack with Docker:
+
+```bash
+# Run all services with Docker
+docker-compose -f docker-compose-full.yml up -d
+
+# View logs
+docker-compose -f docker-compose-full.yml logs -f
+
+# Stop services
+docker-compose -f docker-compose-full.yml down
+```
+
 ## 🌐 Service Endpoints
 
 ### Discovery Service
@@ -110,12 +140,20 @@ mvn spring-boot:run
 
 ### Order Service
 - **Base URL**: http://localhost:8082/orders
+- **Create Order**: POST http://localhost:8082/orders
+- **Get All Orders**: GET http://localhost:8082/orders
+- **Get Order by ID**: GET http://localhost:8082/orders/{id}
+- **Update Order Status**: PUT http://localhost:8082/orders/{id}/status
+- **Delete Order**: DELETE http://localhost:8082/orders/{id}
 - **Health Check**: http://localhost:8082/actuator/health
 - **H2 Console**: http://localhost:8082/h2-console
 
 ### Notification Service
 - **Health Check**: http://localhost:8083/actuator/health
 - **H2 Console**: http://localhost:8083/h2-console
+
+### Kafka UI (Docker)
+- **Kafka UI**: http://localhost:80 (when running with Docker Compose)
 
 ## 📝 API Examples
 
@@ -158,6 +196,37 @@ curl -X PUT http://localhost:8080/api/users/1 \
 curl -X DELETE http://localhost:8080/api/users/1
 ```
 
+### Create an Order
+```bash
+curl -X POST http://localhost:8080/api/orders \
+  -H "Content-Type: application/json" \
+  -d '{
+    "userId": 1,
+    "items": [
+      {
+        "productId": "PROD-001",
+        "quantity": 2,
+        "unitPrice": 29.99,
+        "totalPrice": 59.98
+      }
+    ],
+    "shippingAddress": "123 Main St, City, Country",
+    "notes": "Urgent delivery"
+  }'
+```
+
+### Get All Orders
+```bash
+curl -X GET http://localhost:8080/api/orders
+```
+
+### Update Order Status
+```bash
+curl -X PUT http://localhost:8080/api/orders/1/status \
+  -H "Content-Type: application/json" \
+  -d '"SHIPPED"'
+```
+
 ## 🔄 Event-Driven Communication
 
 ### Kafka Topics
@@ -173,6 +242,12 @@ curl -X DELETE http://localhost:8080/api/users/1
 2. User Service publishes `USER_CREATED` event to Kafka
 3. Notification Service consumes the event and sends welcome notification reactively
 4. Check logs to see the event flow
+
+### Profile Configuration
+The project supports different profiles for development and Docker:
+
+- **`local` profile**: For local development with Kafka on localhost:9092
+- **`docker` profile**: For Docker Compose execution
 
 ## ⚡ Reactive Programming Features
 
@@ -194,22 +269,44 @@ curl -X DELETE http://localhost:8080/api/users/1
 - **Better responsiveness** - Non-blocking operations prevent thread starvation
 - **Modern programming model** - Functional and declarative programming style
 
+### Reactive Service Communication
+- **WebClient** - Reactive HTTP client for service-to-service communication
+- **Load Balancing** - Automatic load balancing with Spring Cloud LoadBalancer
+- **Service Discovery** - Automatic service discovery via Eureka
+- **Circuit Breaker** - Resilience pattern for failure handling
+
 ## 🛠️ Development Features
 
 ### Database
 - **H2 In-Memory Database** for each service
 - **H2 Console** accessible at `/h2-console` for each service
-- **JPA/Hibernate** for data persistence
+- **R2DBC** for reactive data access (replacing JPA/Hibernate)
 
 ### Monitoring
 - **Spring Boot Actuator** for health checks and metrics
 - **Eureka Dashboard** for service discovery monitoring
 - **Comprehensive logging** with SLF4J
+- **Kafka UI** for event monitoring (in Docker)
 
 ### Configuration
 - **Centralized Configuration** via Config Service
-- **Environment-specific** configuration support
-- **Externalized** configuration properties
+- **Environment-specific configuration support**
+- **Externalized configuration properties**
+- **Spring Profiles** for different environments (local, docker)
+
+### Technologies Used
+- **Spring Boot 3.5.3** - Main framework
+- **Spring Cloud 2025.0.0** - Microservices components
+- **Spring WebFlux** - Reactive web programming
+- **Spring Data R2DBC** - Reactive database access
+- **Spring Cloud Gateway** - Reactive API Gateway
+- **Spring Cloud Netflix Eureka** - Service discovery
+- **Spring Cloud LoadBalancer** - Load balancing
+- **Spring Kafka** - Reactive messaging
+- **Project Reactor** - Reactive programming
+- **H2 Database** - In-memory database
+- **Apache Kafka** - Asynchronous messaging
+- **Java 21** - Programming language
 
 ## 🧪 Testing
 
@@ -230,6 +327,17 @@ mvn test
 # 2. Create a user
 # 3. Verify notification is sent
 # 4. Check logs for event flow
+```
+
+### Reactive Tests
+The project uses Project Reactor for reactive testing:
+```java
+@Test
+void testReactiveFlow() {
+    StepVerifier.create(userService.createUser(userDto))
+        .expectNextMatches(user -> user.getUsername().equals("test"))
+        .verifyComplete();
+}
 ```
 
 ## 📊 Monitoring and Debugging
@@ -253,22 +361,33 @@ Visit http://localhost:8761 to see:
 - Service instances
 - Service health status
 
+### Kafka UI (Docker)
+When running with Docker Compose, visit http://localhost:80 to:
+- Monitor Kafka topics
+- View messages in real-time
+- Manage consumers and producers
+
 ## 🔧 Configuration
 
 ### Environment Variables
 You can override configuration using environment variables:
 ```bash
-export SPRING_PROFILES_ACTIVE=dev
+export SPRING_PROFILES_ACTIVE=local
 export KAFKA_BOOTSTRAP_SERVERS=localhost:9092
 export EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://localhost:8761/eureka/
 ```
 
 ### Application Properties
 Each service has its own `application.yml` file with:
-- Database configuration
+- Database configuration (R2DBC)
 - Kafka configuration
 - Eureka client configuration
 - Logging configuration
+
+### Spring Profiles
+The project supports different profiles:
+- **`local`**: For local development
+- **`docker`**: For Docker Compose execution
 
 ## 🚨 Troubleshooting
 
@@ -293,6 +412,11 @@ Each service has its own `application.yml` file with:
    - H2 databases are in-memory, no external setup required
    - Check H2 console for data verification
 
+5. **WebClient issues**
+   - Verify target service is available
+   - Check load balancing configuration
+   - Review WebClient logs for connection errors
+
 ### Debug Mode
 Enable debug logging by adding to `application.yml`:
 ```yaml
@@ -300,6 +424,7 @@ logging:
   level:
     com.bootcamp: DEBUG
     org.springframework.kafka: DEBUG
+    org.springframework.web.reactive.function.client: DEBUG
 ```
 
 ## 📚 Learning Objectives
@@ -311,20 +436,21 @@ This project demonstrates:
    - Non-blocking service operations
    - Distributed system design with Project Reactor
 
-2. **Spring Boot 3.5.0 Features**
+2. **Spring Boot 3.5.3 Features**
    - Latest Spring Boot capabilities
    - Java 21 features
-   - Modern Spring Cloud components
+   - Modern Spring Cloud 2025.0.0 components
    - Spring WebFlux for reactive web applications
 
 3. **Reactive Service Communication**
    - Non-blocking REST APIs using Spring WebFlux
+   - WebClient for reactive HTTP communication
    - Kafka for asynchronous event-driven communication
    - Service discovery and load balancing
    - Project Reactor (Mono/Flux) patterns
 
 4. **Reactive Data Management**
-   - JPA/Hibernate with reactive wrappers
+   - R2DBC for reactive database access
    - Database per service pattern
    - Non-blocking data access patterns
    - Data consistency in distributed systems
@@ -347,6 +473,11 @@ This project demonstrates:
    - Schedulers for thread management
    - Error handling with onErrorResume
 
+8. **Architecture Migration**
+   - Transition from Feign to WebClient
+   - Migration from JPA to R2DBC
+   - Completely reactive architecture
+
 ## 🤝 Contributing
 
 This is a demonstration project for educational purposes. Feel free to:
@@ -365,11 +496,12 @@ This project is created for educational purposes in a bootcamp environment.
 This project serves as a comprehensive example of modern **reactive microservices development** with Spring Boot. Key learning points:
 
 1. **Start with the basics** - Understand each service individually and reactive patterns
-2. **Explore reactive communication patterns** - WebFlux vs Kafka
+2. **Explore reactive communication patterns** - WebFlux vs Kafka vs WebClient
 3. **Practice with reactive APIs** - Use the provided examples with Mono/Flux
 4. **Monitor the system** - Use Eureka dashboard and logs
 5. **Experiment with reactive changes** - Modify configurations and observe effects
 6. **Learn reactive programming** - Understand Mono, Flux, and Project Reactor patterns
+7. **Understand migration** - Comprehend the transition from Feign to WebClient and JPA to R2DBC
 
 ### For Instructors
 - Use this as a reference implementation for reactive microservices
@@ -377,98 +509,53 @@ This project serves as a comprehensive example of modern **reactive microservice
 - Encourage students to explore and modify the code
 - Use the event flow as a practical example of event-driven architecture
 - Teach reactive programming concepts with real-world examples
+- Explain the advantages of completely reactive architecture
 
-# Microservices Demo - Configuración Local
+## 🚀 Quick Start
 
-Este proyecto demuestra una arquitectura de microservicios usando Spring Boot, Spring Cloud, Kafka y Eureka.
+### Option 1: Local Development
+```bash
+# 1. Clone the repository
+git clone <repository-url>
+cd kafka
 
-## Arquitectura
+# 2. Start Kafka
+docker-compose up -d
 
-- **Discovery Service** (Puerto 8761): Servicio de descubrimiento usando Eureka
-- **API Gateway** (Puerto 8080): Gateway para enrutar requests a los microservicios
-- **User Service** (Puerto 8081): Gestión de usuarios con base de datos H2
-- **Order Service** (Puerto 8082): Gestión de órdenes con comunicación a User Service
-- **Notification Service** (Puerto 8083): Servicio de notificaciones que consume eventos de Kafka
+# 3. Run with script
+start-local-dev.bat
+```
 
-## Configuración Local
+### Option 2: Complete Docker Compose
+```bash
+# Run the entire stack
+docker-compose -f docker-compose-full.yml up -d
 
-Cada microservicio tiene su propia configuración local en `src/main/resources/application.yml`:
+# Access interfaces
+# Eureka: http://localhost:8761
+# Kafka UI: http://localhost:80
+# API Gateway: http://localhost:8080
+```
 
-### Discovery Service
-- Puerto: 8761
-- Configuración: Eureka Server sin registro automático
+## 📊 Monitoring and Tools
 
-### API Gateway
-- Puerto: 8080
-- Rutas configuradas para cada microservicio
-- Circuit breaker para resiliencia
+- **Eureka Dashboard**: http://localhost:8761
+- **Kafka UI**: http://localhost:80 (Docker)
+- **H2 Console**: http://localhost:8081/h2-console (User Service)
+- **Health Checks**: `/actuator/health` on each service
 
-### User Service
-- Puerto: 8081
-- Base de datos: H2 en memoria
-- Kafka: Productor de eventos de usuario
-- Endpoints: CRUD de usuarios
+## 🔄 Example Event Flow
 
-### Order Service
-- Puerto: 8082
-- Base de datos: H2 en memoria
-- Feign Client: Comunicación con User Service
-- Endpoints: CRUD de órdenes
+1. **Create User**: `POST /api/users`
+2. **User Service** publishes `USER_CREATED` event to Kafka
+3. **Notification Service** consumes the event and sends notification
+4. **Create Order**: `POST /api/orders` (validates user via WebClient)
+5. **Order Service** updates order status
 
-### Notification Service
-- Puerto: 8083
-- Kafka: Consumidor de eventos de usuario
-- Endpoints: Notificaciones
+## 🎯 Next Steps
 
-## Tecnologías Utilizadas
-
-- **Spring Boot 3.5.3**
-- **Spring Cloud 2025.0.0**
-- **Spring Cloud Gateway**
-- **Spring Cloud Netflix Eureka**
-- **Spring Cloud OpenFeign**
-- **Spring Kafka**
-- **Spring Data JPA**
-- **H2 Database**
-- **Java 21**
-
-## Puertos de los Servicios
-
-- **Discovery Service**: 8761
-- **API Gateway**: 8080
-- **User Service**: 8081
-- **Order Service**: 8082
-- **Notification Service**: 8083
-
-## Configuración de Kafka
-
-Todos los servicios que usan Kafka están configurados para conectarse a:
-- **Bootstrap Servers**: localhost:9092
-- **Auto Offset Reset**: earliest
-- **Serializers/Deserializers**: JSON
-
-## Configuración de Eureka
-
-Todos los servicios están configurados para registrarse en:
-- **Eureka Server**: http://localhost:8761/eureka/
-
-## Configuración de Base de Datos
-
-Los servicios que usan base de datos están configurados con:
-- **H2 Database**: En memoria
-- **DDL Auto**: create-drop
-- **Show SQL**: true
-
-## Endpoints de Monitoreo
-
-Todos los servicios exponen los siguientes endpoints:
-- `/actuator/health` - Estado de salud
-- `/actuator/info` - Información del servicio
-- `/actuator/metrics` - Métricas del servicio
-
-## Ventajas de la Configuración Local
-
-1. **Simplicidad**: Cada servicio es independiente
-2. **Rapidez**: No hay dependencias externas de configuración
-3. **Flexibilidad**: Fácil modificación de configuraciones
-4. **Independencia**: No depende del config-server 
+- Implement complete reactive tests
+- Add WebClient and R2DBC metrics
+- Implement Circuit Breaker with Resilience4j
+- Add API documentation with OpenAPI
+- Implement authentication and authorization 

@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
  * Order Service
  * 
  * Contains reactive business logic for order management operations.
- * Handles order CRUD operations and integrates with User Service via Feign client.
+ * Handles order CRUD operations and integrates with User Service via WebClient.
  * 
  * @author Bootcamp Instructor
  * @version 1.0
@@ -144,7 +144,7 @@ public class OrderService {
      * @return Mono containing user information if valid
      */
     private Mono<UserDto> validateUser(Long userId) {
-        return Mono.fromCallable(() -> userServiceClient.getUserById(userId))
+        return userServiceClient.getUserById(userId)
                 .onErrorResume(e -> {
                     logger.error("Failed to validate user: {}", e.getMessage());
                     return Mono.error(new RuntimeException("User not found with ID: " + userId));

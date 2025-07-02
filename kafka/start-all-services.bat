@@ -20,9 +20,6 @@ echo 4. Starting microservices...
 docker-compose up -d discovery-service
 timeout /t 5 /nobreak
 
-docker-compose up -d config-service
-timeout /t 5 /nobreak
-
 docker-compose up -d user-service
 timeout /t 5 /nobreak
 

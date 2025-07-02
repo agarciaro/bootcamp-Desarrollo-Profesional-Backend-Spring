@@ -40,10 +40,10 @@
             <artifactId>spring-kafka</artifactId>
         </dependency>
 
-        <!-- Spring Cloud OpenFeign for service-to-service communication -->
+        <!-- Spring Boot Starter WebFlux for reactive HTTP client -->
         <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-openfeign</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
         </dependency>
     </dependencies>
 </project> 

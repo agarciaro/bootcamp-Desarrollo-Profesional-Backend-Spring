@@ -1,46 +1,100 @@
 package com.bootcamp.order.client;
 
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import com.bootcamp.order.client.UserDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
+import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 /**
  * User Service Client
  * 
- * Feign client for making HTTP calls to the User Service.
+ * WebClient for making reactive HTTP calls to the User Service.
  * This enables service-to-service communication between Order Service and User Service.
  * 
  * @author Bootcamp Instructor
  * @version 1.0
  */
-@FeignClient(name = "user-service")
-public interface UserServiceClient {
+@Component
+public class UserServiceClient {
+
+    private static final Logger logger = LoggerFactory.getLogger(UserServiceClient.class);
+    private static final String USER_SERVICE_NAME = "user-service";
+
+    @Autowired
+    @LoadBalanced
+    private WebClient.Builder webClientBuilder;
 
     /**
-     * Get user by ID
+     * Get user by ID reactively
      * 
      * @param id the user ID
-     * @return UserDto containing user information
+     * @return Mono containing UserDto with user information
      */
-    @GetMapping("/users/{id}")
-    UserDto getUserById(@PathVariable("id") Long id);
+    public Mono<UserDto> getUserById(Long id) {
+        logger.debug("Fetching user with ID: {}", id);
+        
+        return webClientBuilder
+            .baseUrl(getUserServiceUrl())
+            .build()
+            .get()
+            .uri("/users/{id}", id)
+            .retrieve()
+            .bodyToMono(UserDto.class)
+            .doOnSuccess(user -> logger.debug("Successfully fetched user: {}", user.getUsername()))
+            .doOnError(error -> logger.error("Failed to fetch user with ID {}: {}", id, error.getMessage()));
+    }
 
     /**
-     * Get user by username
+     * Get user by username reactively
      * 
      * @param username the username
-     * @return UserDto containing user information
+     * @return Mono containing UserDto with user information
      */
-    @GetMapping("/users/username/{username}")
-    UserDto getUserByUsername(@PathVariable("username") String username);
+    public Mono<UserDto> getUserByUsername(String username) {
+        logger.debug("Fetching user with username: {}", username);
+        
+        return webClientBuilder
+            .baseUrl(getUserServiceUrl())
+            .build()
+            .get()
+            .uri("/users/username/{username}", username)
+            .retrieve()
+            .bodyToMono(UserDto.class)
+            .doOnSuccess(user -> logger.debug("Successfully fetched user: {}", user.getUsername()))
+            .doOnError(error -> logger.error("Failed to fetch user with username {}: {}", username, error.getMessage()));
+    }
 
     /**
-     * Health check endpoint
+     * Health check endpoint reactively
      * 
-     * @return health status string
+     * @return Mono containing health status string
      */
-    @GetMapping("/users/health")
-    String health();
+    public Mono<String> health() {
+        logger.debug("Checking user service health");
+        
+        return webClientBuilder
+            .baseUrl(getUserServiceUrl())
+            .build()
+            .get()
+            .uri("/users/health")
+            .retrieve()
+            .bodyToMono(String.class)
+            .doOnSuccess(health -> logger.debug("User service health: {}", health))
+            .doOnError(error -> logger.error("Failed to check user service health: {}", error.getMessage()));
+    }
+
+    /**
+     * Get the base URL for the user service using service discovery
+     * 
+     * @return the base URL for the user service
+     */
+    private String getUserServiceUrl() {
+        return "http://" + USER_SERVICE_NAME;
+    }
 }
 
  
