@@ -35,10 +35,10 @@ services:
     depends_on:
       - kafka
     ports:
-      - "80:80"
+      - "8080:80"
     environment:
       KAFKA_CLUSTERS_0_NAME: local
-      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
     networks:
       - kafka-network
 
