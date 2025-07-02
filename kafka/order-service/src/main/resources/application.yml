@@ -4,28 +4,22 @@ server:
 spring:
   application:
     name: order-service
-  cloud:
-    config:
-      uri: http://localhost:8888
-  datasource:
-    url: jdbc:h2:mem:orderdb
-    driver-class-name: org.h2.Driver
+  main:
+    web-application-type: reactive
+  r2dbc:
+    url: r2dbc:h2:mem:///orderdb
     username: sa
-    password: password
+    password: 
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
   h2:
     console:
       enabled: true
       path: /h2-console
-  jpa:
-    hibernate:
-      ddl-auto: create-drop
-    show-sql: true
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.H2Dialect
-        format_sql: true
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer

@@ -1,6 +1,8 @@
 package com.bootcamp.order.model;
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -16,38 +18,35 @@ import java.math.BigDecimal;
  * @author Bootcamp Instructor
  * @version 1.0
  */
-@Entity
-@Table(name = "order_items")
+@Table("order_items")
 public class OrderItem {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id", nullable = false)
-    private Order order;
+    @Column("order_id")
+    private Long orderId;
 
     @NotBlank(message = "Product name is required")
-    @Column(name = "product_name", nullable = false)
+    @Column("product_name")
     private String productName;
 
-    @Column(name = "product_id")
+    @Column("product_id")
     private Long productId;
 
     @NotNull(message = "Quantity is required")
     @Positive(message = "Quantity must be positive")
-    @Column(nullable = false)
+    @Column("quantity")
     private Integer quantity;
 
     @NotNull(message = "Unit price is required")
     @Positive(message = "Unit price must be positive")
-    @Column(name = "unit_price", nullable = false)
+    @Column("unit_price")
     private BigDecimal unitPrice;
 
     @NotNull(message = "Total price is required")
     @Positive(message = "Total price must be positive")
-    @Column(name = "total_price", nullable = false)
+    @Column("total_price")
     private BigDecimal totalPrice;
 
     // Default constructor
@@ -71,12 +70,12 @@ public class OrderItem {
         this.id = id;
     }
 
-    public Order getOrder() {
-        return order;
+    public Long getOrderId() {
+        return orderId;
     }
 
-    public void setOrder(Order order) {
-        this.order = order;
+    public void setOrderId(Long orderId) {
+        this.orderId = orderId;
     }
 
     public String getProductName() {

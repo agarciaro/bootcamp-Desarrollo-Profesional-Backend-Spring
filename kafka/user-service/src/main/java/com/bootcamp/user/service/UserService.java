@@ -2,6 +2,7 @@ package com.bootcamp.user.service;
 
 import com.bootcamp.user.dto.UserDto;
 import com.bootcamp.user.event.UserEvent;
+import com.bootcamp.user.event.UserEventType;
 import com.bootcamp.user.model.User;
 import com.bootcamp.user.repository.UserRepository;
 import org.slf4j.Logger;
@@ -43,8 +44,7 @@ public class UserService {
     public Mono<UserDto> createUser(UserDto userDto) {
         logger.info("Creating new user with username: {}", userDto.getUsername());
 
-        return Mono.fromCallable(() -> userDto)
-            .flatMap(dto -> checkUserExists(dto.getUsername(), dto.getEmail()))
+        return checkUserExists(userDto.getUsername(), userDto.getEmail())
             .flatMap(exists -> {
                 if (exists) {
                     return Mono.error(new RuntimeException("Username or email already exists"));
@@ -57,14 +57,12 @@ public class UserService {
                 dto.getFirstName(),
                 dto.getLastName()
             ))
-            .publishOn(Schedulers.boundedElastic())
-            .map(user -> userRepository.save(user))
+            .flatMap(userRepository::save)
             .doOnNext(savedUser -> {
                 logger.info("User created successfully with ID: {}", savedUser.getId());
-                publishUserEvent(UserEventType.USER_CREATED, savedUser);
+                publishUserEvent(UserEventType.USER_CREATED.toString(), savedUser);
             })
-            .map(this::convertToDto)
-            .subscribeOn(Schedulers.boundedElastic());
+            .map(this::convertToDto);
     }
 
     /**
@@ -74,10 +72,8 @@ public class UserService {
      */
     public Flux<UserDto> getAllUsers() {
         logger.info("Retrieving all users");
-        return Flux.fromIterable(userRepository.findAll())
-                .publishOn(Schedulers.boundedElastic())
-                .map(this::convertToDto)
-                .subscribeOn(Schedulers.boundedElastic());
+        return userRepository.findAll()
+                .map(this::convertToDto);
     }
 
     /**
@@ -88,11 +84,9 @@ public class UserService {
      */
     public Mono<UserDto> getUserById(Long id) {
         logger.info("Retrieving user with ID: {}", id);
-        return Mono.fromCallable(() -> userRepository.findById(id))
-                .publishOn(Schedulers.boundedElastic())
-                .flatMap(optional -> optional.map(user -> Mono.just(convertToDto(user)))
-                        .orElse(Mono.empty()))
-                .subscribeOn(Schedulers.boundedElastic());
+        return userRepository.findById(id)
+                .map(this::convertToDto)
+                .switchIfEmpty(Mono.empty());
     }
 
     /**
@@ -103,11 +97,9 @@ public class UserService {
      */
     public Mono<UserDto> getUserByUsername(String username) {
         logger.info("Retrieving user with username: {}", username);
-        return Mono.fromCallable(() -> userRepository.findByUsername(username))
-                .publishOn(Schedulers.boundedElastic())
-                .flatMap(optional -> optional.map(user -> Mono.just(convertToDto(user)))
-                        .orElse(Mono.empty()))
-                .subscribeOn(Schedulers.boundedElastic());
+        return userRepository.findByUsername(username)
+                .map(this::convertToDto)
+                .switchIfEmpty(Mono.empty());
     }
 
     /**
@@ -120,24 +112,22 @@ public class UserService {
     public Mono<UserDto> updateUser(Long id, UserDto userDto) {
         logger.info("Updating user with ID: {}", id);
 
-        return Mono.fromCallable(() -> userRepository.findById(id))
-                .publishOn(Schedulers.boundedElastic())
-                .flatMap(optional -> optional.map(Mono::just)
-                        .orElse(Mono.error(new RuntimeException("User not found with ID: " + id))))
+        return userRepository.findById(id)
+                .switchIfEmpty(Mono.error(new RuntimeException("User not found with ID: " + id)))
                 .map(user -> {
                     // Update user fields
                     user.setFirstName(userDto.getFirstName());
                     user.setLastName(userDto.getLastName());
                     user.setEmail(userDto.getEmail());
+                    user.preUpdate();
                     return user;
                 })
-                .map(userRepository::save)
+                .flatMap(userRepository::save)
                 .doOnNext(updatedUser -> {
                     logger.info("User updated successfully with ID: {}", updatedUser.getId());
-                    publishUserEvent(UserEventType.USER_UPDATED, updatedUser);
+                    publishUserEvent(UserEventType.USER_UPDATED.toString(), updatedUser);
                 })
-                .map(this::convertToDto)
-                .subscribeOn(Schedulers.boundedElastic());
+                .map(this::convertToDto);
     }
 
     /**
@@ -149,17 +139,14 @@ public class UserService {
     public Mono<Void> deleteUser(Long id) {
         logger.info("Deleting user with ID: {}", id);
 
-        return Mono.fromCallable(() -> userRepository.findById(id))
-                .publishOn(Schedulers.boundedElastic())
-                .flatMap(optional -> optional.map(Mono::just)
-                        .orElse(Mono.error(new RuntimeException("User not found with ID: " + id))))
+        return userRepository.findById(id)
+                .switchIfEmpty(Mono.error(new RuntimeException("User not found with ID: " + id)))
                 .doOnNext(user -> {
                     // Publish user deleted event to Kafka before deletion
-                    publishUserEvent(UserEventType.USER_DELETED, user);
+                    publishUserEvent(UserEventType.USER_DELETED.toString(), user);
                 })
-                .then(Mono.fromRunnable(() -> userRepository.deleteById(id)))
-                .doOnSuccess(v -> logger.info("User deleted successfully with ID: {}", id))
-                .subscribeOn(Schedulers.boundedElastic());
+                .then(userRepository.deleteById(id))
+                .doOnSuccess(v -> logger.info("User deleted successfully with ID: {}", id));
     }
 
     /**
@@ -189,10 +176,10 @@ public class UserService {
      * @return Mono<Boolean> true if user exists, false otherwise
      */
     private Mono<Boolean> checkUserExists(String username, String email) {
-        return Mono.fromCallable(() -> 
-            userRepository.existsByUsername(username) || userRepository.existsByEmail(email))
-            .publishOn(Schedulers.boundedElastic())
-            .subscribeOn(Schedulers.boundedElastic());
+        return Mono.zip(
+            userRepository.existsByUsername(username),
+            userRepository.existsByEmail(email)
+        ).map(tuple -> tuple.getT1() || tuple.getT2());
     }
 
     /**

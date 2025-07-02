@@ -1,12 +1,13 @@
 package com.bootcamp.order.model;
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 
 /**
  * Order Entity
@@ -17,40 +18,34 @@ import java.util.List;
  * @author Bootcamp Instructor
  * @version 1.0
  */
-@Entity
-@Table(name = "orders")
+@Table("orders")
 public class Order {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotNull(message = "User ID is required")
-    @Column(name = "user_id", nullable = false)
+    @Column("user_id")
     private Long userId;
-
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<OrderItem> orderItems;
 
     @NotNull(message = "Total amount is required")
     @Positive(message = "Total amount must be positive")
-    @Column(name = "total_amount", nullable = false)
+    @Column("total_amount")
     private BigDecimal totalAmount;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
+    @Column("status")
     private OrderStatus status;
 
-    @Column(name = "created_at")
+    @Column("created_at")
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at")
+    @Column("updated_at")
     private LocalDateTime updatedAt;
 
-    @Column(name = "shipping_address")
+    @Column("shipping_address")
     private String shippingAddress;
 
-    @Column(name = "notes")
+    @Column("notes")
     private String notes;
 
     // Default constructor
@@ -82,14 +77,6 @@ public class Order {
 
     public void setUserId(Long userId) {
         this.userId = userId;
-    }
-
-    public List<OrderItem> getOrderItems() {
-        return orderItems;
-    }
-
-    public void setOrderItems(List<OrderItem> orderItems) {
-        this.orderItems = orderItems;
     }
 
     public BigDecimal getTotalAmount() {
@@ -140,7 +127,6 @@ public class Order {
         this.notes = notes;
     }
 
-    @PreUpdate
     public void preUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
@@ -157,16 +143,4 @@ public class Order {
     }
 }
 
-/**
- * Order Status Enumeration
- * 
- * Defines the possible states of an order.
- */
-enum OrderStatus {
-    PENDING,
-    CONFIRMED,
-    PROCESSING,
-    SHIPPED,
-    DELIVERED,
-    CANCELLED
-} 
+ 

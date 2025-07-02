@@ -4,26 +4,18 @@ server:
 spring:
   application:
     name: discovery-service
-  main:
-    web-application-type: servlet
 
 # Eureka Server Configuration
 eureka:
   instance:
     hostname: localhost
   client:
-    # Disable client behavior as this is a server
     register-with-eureka: false
     fetch-registry: false
     service-url:
-      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
-  server:
-    # Enable self-preservation mode
-    enable-self-preservation: false
-    # Eviction interval in milliseconds
-    eviction-interval-timer-in-ms: 1000
+      defaultZone: http://localhost:8761/eureka/
 
-# Management endpoints for monitoring
+# Management endpoints
 management:
   endpoints:
     web:

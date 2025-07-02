@@ -1,0 +1,35 @@
+# Global configuration for all microservices
+spring:
+  profiles:
+    active: local
+  cloud:
+    config:
+      uri: http://localhost:8888
+      fail-fast: true
+      retry:
+        initial-interval: 1000
+        max-interval: 2000
+        max-attempts: 6
+
+# Logging configuration
+logging:
+  level:
+    com.bootcamp: DEBUG
+    org.springframework.cloud: INFO
+    org.springframework.kafka: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+
+# Common management configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+  prometheus:
+    metrics:
+      export:
+        enabled: true 

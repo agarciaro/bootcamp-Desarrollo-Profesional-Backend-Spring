@@ -1,52 +1,51 @@
 package com.bootcamp.user.repository;
 
 import com.bootcamp.user.model.User;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
-
-import java.util.Optional;
+import reactor.core.publisher.Mono;
 
 /**
  * User Repository Interface
  * 
- * Provides data access methods for User entities.
- * Extends JpaRepository to get basic CRUD operations and adds custom query methods.
+ * Provides reactive data access methods for User entities.
+ * Extends ReactiveCrudRepository to get basic CRUD operations and adds custom query methods.
  * 
  * @author Bootcamp Instructor
  * @version 1.0
  */
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends ReactiveCrudRepository<User, Long> {
 
     /**
      * Find a user by their username
      * 
      * @param username the username to search for
-     * @return Optional containing the user if found
+     * @return Mono containing the user if found
      */
-    Optional<User> findByUsername(String username);
+    Mono<User> findByUsername(String username);
 
     /**
      * Find a user by their email address
      * 
      * @param email the email to search for
-     * @return Optional containing the user if found
+     * @return Mono containing the user if found
      */
-    Optional<User> findByEmail(String email);
+    Mono<User> findByEmail(String email);
 
     /**
      * Check if a username already exists
      * 
      * @param username the username to check
-     * @return true if username exists, false otherwise
+     * @return Mono<Boolean> true if username exists, false otherwise
      */
-    boolean existsByUsername(String username);
+    Mono<Boolean> existsByUsername(String username);
 
     /**
      * Check if an email already exists
      * 
      * @param email the email to check
-     * @return true if email exists, false otherwise
+     * @return Mono<Boolean> true if email exists, false otherwise
      */
-    boolean existsByEmail(String email);
+    Mono<Boolean> existsByEmail(String email);
 } 

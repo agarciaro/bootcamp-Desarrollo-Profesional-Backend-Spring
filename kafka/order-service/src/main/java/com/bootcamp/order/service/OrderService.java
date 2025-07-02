@@ -1,8 +1,10 @@
 package com.bootcamp.order.service;
 
 import com.bootcamp.order.client.UserServiceClient;
+import com.bootcamp.order.client.UserDto;
 import com.bootcamp.order.model.Order;
 import com.bootcamp.order.model.OrderItem;
+import com.bootcamp.order.model.OrderStatus;
 import com.bootcamp.order.repository.OrderRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,16 +62,10 @@ public class OrderService {
                     order.setShippingAddress(shippingAddress);
                     order.setNotes(notes);
 
-                    // Set order reference for items
-                    items.forEach(item -> item.setOrder(order));
-                    order.setOrderItems(items);
-
                     return Mono.just(order);
                 })
-                .publishOn(Schedulers.boundedElastic())
-                .map(orderRepository::save)
-                .doOnNext(savedOrder -> logger.info("Order created successfully with ID: {}", savedOrder.getId()))
-                .subscribeOn(Schedulers.boundedElastic());
+                .flatMap(orderRepository::save)
+                .doOnNext(savedOrder -> logger.info("Order created successfully with ID: {}", savedOrder.getId()));
     }
 
     /**
@@ -79,9 +75,7 @@ public class OrderService {
      */
     public Flux<Order> getAllOrders() {
         logger.info("Retrieving all orders");
-        return Flux.fromIterable(orderRepository.findAll())
-                .publishOn(Schedulers.boundedElastic())
-                .subscribeOn(Schedulers.boundedElastic());
+        return orderRepository.findAll();
     }
 
     /**
@@ -92,11 +86,8 @@ public class OrderService {
      */
     public Mono<Order> getOrderById(Long id) {
         logger.info("Retrieving order with ID: {}", id);
-        return Mono.fromCallable(() -> orderRepository.findById(id))
-                .publishOn(Schedulers.boundedElastic())
-                .flatMap(optional -> optional.map(Mono::just)
-                        .orElse(Mono.empty()))
-                .subscribeOn(Schedulers.boundedElastic());
+        return orderRepository.findById(id)
+                .switchIfEmpty(Mono.empty());
     }
 
     /**
@@ -107,9 +98,7 @@ public class OrderService {
      */
     public Flux<Order> getOrdersByUserId(Long userId) {
         logger.info("Retrieving orders for user: {}", userId);
-        return Flux.fromIterable(orderRepository.findByUserId(userId))
-                .publishOn(Schedulers.boundedElastic())
-                .subscribeOn(Schedulers.boundedElastic());
+        return orderRepository.findByUserId(userId);
     }
 
     /**
@@ -122,17 +111,15 @@ public class OrderService {
     public Mono<Order> updateOrderStatus(Long id, String status) {
         logger.info("Updating order status for order: {} to: {}", id, status);
 
-        return Mono.fromCallable(() -> orderRepository.findById(id))
-                .publishOn(Schedulers.boundedElastic())
-                .flatMap(optional -> optional.map(Mono::just)
-                        .orElse(Mono.error(new RuntimeException("Order not found with ID: " + id))))
+        return orderRepository.findById(id)
+                .switchIfEmpty(Mono.error(new RuntimeException("Order not found with ID: " + id)))
                 .map(order -> {
                     order.setStatus(OrderStatus.valueOf(status.toUpperCase()));
+                    order.preUpdate();
                     return order;
                 })
-                .map(orderRepository::save)
-                .doOnNext(updatedOrder -> logger.info("Order status updated successfully for order: {}", updatedOrder.getId()))
-                .subscribeOn(Schedulers.boundedElastic());
+                .flatMap(orderRepository::save)
+                .doOnNext(updatedOrder -> logger.info("Order status updated successfully for order: {}", updatedOrder.getId()));
     }
 
     /**
@@ -144,13 +131,10 @@ public class OrderService {
     public Mono<Void> deleteOrder(Long id) {
         logger.info("Deleting order with ID: {}", id);
 
-        return Mono.fromCallable(() -> orderRepository.findById(id))
-                .publishOn(Schedulers.boundedElastic())
-                .flatMap(optional -> optional.map(Mono::just)
-                        .orElse(Mono.error(new RuntimeException("Order not found with ID: " + id))))
-                .then(Mono.fromRunnable(() -> orderRepository.deleteById(id)))
-                .doOnSuccess(v -> logger.info("Order deleted successfully with ID: {}", id))
-                .subscribeOn(Schedulers.boundedElastic());
+        return orderRepository.findById(id)
+                .switchIfEmpty(Mono.error(new RuntimeException("Order not found with ID: " + id)))
+                .then(orderRepository.deleteById(id))
+                .doOnSuccess(v -> logger.info("Order deleted successfully with ID: {}", id));
     }
 
     /**
@@ -159,27 +143,13 @@ public class OrderService {
      * @param userId the user ID to validate
      * @return Mono containing user information if valid
      */
-    private Mono<UserServiceClient.UserDto> validateUser(Long userId) {
+    private Mono<UserDto> validateUser(Long userId) {
         return Mono.fromCallable(() -> userServiceClient.getUserById(userId))
-                .publishOn(Schedulers.boundedElastic())
                 .onErrorResume(e -> {
                     logger.error("Failed to validate user: {}", e.getMessage());
                     return Mono.error(new RuntimeException("User not found with ID: " + userId));
-                })
-                .subscribeOn(Schedulers.boundedElastic());
+                });
     }
 }
 
-/**
- * Order Status Enumeration
- * 
- * Defines the possible states of an order.
- */
-enum OrderStatus {
-    PENDING,
-    CONFIRMED,
-    PROCESSING,
-    SHIPPED,
-    DELIVERED,
-    CANCELLED
-} 
+ 

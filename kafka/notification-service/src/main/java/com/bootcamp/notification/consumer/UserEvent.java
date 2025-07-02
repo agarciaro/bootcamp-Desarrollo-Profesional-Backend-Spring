@@ -1,44 +1,23 @@
-package com.bootcamp.user.event;
-
-import java.time.LocalDateTime;
+package com.bootcamp.notification.consumer;
 
 /**
- * User Event
+ * User Event class for Kafka consumption
  * 
- * Represents events related to user operations that will be published to Kafka.
- * Other microservices can consume these events to react to user changes.
+ * Represents user events received from Kafka.
  * 
  * @author Bootcamp Instructor
  * @version 1.0
  */
 public class UserEvent {
-
     private String eventType;
     private Long userId;
     private String username;
     private String email;
-    private LocalDateTime timestamp;
+    private String timestamp;
     private String data;
 
     // Default constructor
-    public UserEvent() {
-        this.timestamp = LocalDateTime.now();
-    }
-
-    // Constructor with parameters
-    public UserEvent(String eventType, Long userId, String username, String email) {
-        this();
-        this.eventType = eventType;
-        this.userId = userId;
-        this.username = username;
-        this.email = email;
-    }
-
-    // Constructor with all fields
-    public UserEvent(String eventType, Long userId, String username, String email, String data) {
-        this(eventType, userId, username, email);
-        this.data = data;
-    }
+    public UserEvent() {}
 
     // Getters and Setters
     public String getEventType() {
@@ -73,11 +52,11 @@ public class UserEvent {
         this.email = email;
     }
 
-    public LocalDateTime getTimestamp() {
+    public String getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(LocalDateTime timestamp) {
+    public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
     }
 
@@ -96,10 +75,7 @@ public class UserEvent {
                 ", userId=" + userId +
                 ", username='" + username + '\'' +
                 ", email='" + email + '\'' +
-                ", timestamp=" + timestamp +
-                ", data='" + data + '\'' +
+                ", timestamp='" + timestamp + '\'' +
                 '}';
     }
-}
-
- 
+} 

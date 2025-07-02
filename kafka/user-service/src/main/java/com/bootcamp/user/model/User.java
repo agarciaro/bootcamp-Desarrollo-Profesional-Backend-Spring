@@ -1,6 +1,8 @@
 package com.bootcamp.user.model;
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -16,39 +18,39 @@ import java.time.LocalDateTime;
  * @author Bootcamp Instructor
  * @version 1.0
  */
-@Entity
-@Table(name = "users")
+@Table("users")
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotBlank(message = "Username is required")
     @Size(min = 3, max = 50, message = "Username must be between 3 and 50 characters")
-    @Column(unique = true, nullable = false)
+    @Column("username")
     private String username;
 
     @NotBlank(message = "Email is required")
     @Email(message = "Email should be valid")
-    @Column(unique = true, nullable = false)
+    @Column("email")
     private String email;
 
     @NotBlank(message = "First name is required")
     @Size(max = 100, message = "First name cannot exceed 100 characters")
+    @Column("first_name")
     private String firstName;
 
     @NotBlank(message = "Last name is required")
     @Size(max = 100, message = "Last name cannot exceed 100 characters")
+    @Column("last_name")
     private String lastName;
 
-    @Column(name = "created_at")
+    @Column("created_at")
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at")
+    @Column("updated_at")
     private LocalDateTime updatedAt;
 
-    @Enumerated(EnumType.STRING)
+    @Column("status")
     private UserStatus status;
 
     // Default constructor
@@ -132,7 +134,6 @@ public class User {
         this.status = status;
     }
 
-    @PreUpdate
     public void preUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
@@ -150,14 +151,4 @@ public class User {
     }
 }
 
-/**
- * User Status Enumeration
- * 
- * Defines the possible states of a user account.
- */
-enum UserStatus {
-    ACTIVE,
-    INACTIVE,
-    SUSPENDED,
-    DELETED
-} 
+ 

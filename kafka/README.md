@@ -376,4 +376,99 @@ This project serves as a comprehensive example of modern **reactive microservice
 - Demonstrate each component step by step with reactive patterns
 - Encourage students to explore and modify the code
 - Use the event flow as a practical example of event-driven architecture
-- Teach reactive programming concepts with real-world examples 
+- Teach reactive programming concepts with real-world examples
+
+# Microservices Demo - Configuración Local
+
+Este proyecto demuestra una arquitectura de microservicios usando Spring Boot, Spring Cloud, Kafka y Eureka.
+
+## Arquitectura
+
+- **Discovery Service** (Puerto 8761): Servicio de descubrimiento usando Eureka
+- **API Gateway** (Puerto 8080): Gateway para enrutar requests a los microservicios
+- **User Service** (Puerto 8081): Gestión de usuarios con base de datos H2
+- **Order Service** (Puerto 8082): Gestión de órdenes con comunicación a User Service
+- **Notification Service** (Puerto 8083): Servicio de notificaciones que consume eventos de Kafka
+
+## Configuración Local
+
+Cada microservicio tiene su propia configuración local en `src/main/resources/application.yml`:
+
+### Discovery Service
+- Puerto: 8761
+- Configuración: Eureka Server sin registro automático
+
+### API Gateway
+- Puerto: 8080
+- Rutas configuradas para cada microservicio
+- Circuit breaker para resiliencia
+
+### User Service
+- Puerto: 8081
+- Base de datos: H2 en memoria
+- Kafka: Productor de eventos de usuario
+- Endpoints: CRUD de usuarios
+
+### Order Service
+- Puerto: 8082
+- Base de datos: H2 en memoria
+- Feign Client: Comunicación con User Service
+- Endpoints: CRUD de órdenes
+
+### Notification Service
+- Puerto: 8083
+- Kafka: Consumidor de eventos de usuario
+- Endpoints: Notificaciones
+
+## Tecnologías Utilizadas
+
+- **Spring Boot 3.5.3**
+- **Spring Cloud 2025.0.0**
+- **Spring Cloud Gateway**
+- **Spring Cloud Netflix Eureka**
+- **Spring Cloud OpenFeign**
+- **Spring Kafka**
+- **Spring Data JPA**
+- **H2 Database**
+- **Java 21**
+
+## Puertos de los Servicios
+
+- **Discovery Service**: 8761
+- **API Gateway**: 8080
+- **User Service**: 8081
+- **Order Service**: 8082
+- **Notification Service**: 8083
+
+## Configuración de Kafka
+
+Todos los servicios que usan Kafka están configurados para conectarse a:
+- **Bootstrap Servers**: localhost:9092
+- **Auto Offset Reset**: earliest
+- **Serializers/Deserializers**: JSON
+
+## Configuración de Eureka
+
+Todos los servicios están configurados para registrarse en:
+- **Eureka Server**: http://localhost:8761/eureka/
+
+## Configuración de Base de Datos
+
+Los servicios que usan base de datos están configurados con:
+- **H2 Database**: En memoria
+- **DDL Auto**: create-drop
+- **Show SQL**: true
+
+## Endpoints de Monitoreo
+
+Todos los servicios exponen los siguientes endpoints:
+- `/actuator/health` - Estado de salud
+- `/actuator/info` - Información del servicio
+- `/actuator/metrics` - Métricas del servicio
+
+## Ventajas de la Configuración Local
+
+1. **Simplicidad**: Cada servicio es independiente
+2. **Rapidez**: No hay dependencias externas de configuración
+3. **Flexibilidad**: Fácil modificación de configuraciones
+4. **Independencia**: No depende del config-server 

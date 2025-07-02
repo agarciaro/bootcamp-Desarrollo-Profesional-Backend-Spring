@@ -4,26 +4,22 @@ server:
 spring:
   application:
     name: notification-service
-  cloud:
-    config:
-      uri: http://localhost:8888
-  datasource:
-    url: jdbc:h2:mem:notificationdb
-    driver-class-name: org.h2.Driver
+  main:
+    web-application-type: reactive
+  profiles:
+    active: local
+  r2dbc:
+    url: r2dbc:h2:mem:///notificationdb
     username: sa
-    password: password
+    password: 
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
   h2:
     console:
       enabled: true
       path: /h2-console
-  jpa:
-    hibernate:
-      ddl-auto: create-drop
-    show-sql: true
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.H2Dialect
-        format_sql: true
   kafka:
     bootstrap-servers: localhost:9092
     consumer:
@@ -33,6 +29,20 @@ spring:
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
         spring.json.trusted.packages: "*"
+        spring.json.type.mapping: userEvent:com.bootcamp.notification.consumer.UserEvent
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    listener:
+      ack-mode: MANUAL_IMMEDIATE
+      type: single
+      concurrency: 3
+      poll-timeout: 3000
+      retry:
+        enabled: true
+        initial-interval: 1000
+        max-attempts: 3
+        multiplier: 2.0
 
 # Eureka Client Configuration
 eureka:

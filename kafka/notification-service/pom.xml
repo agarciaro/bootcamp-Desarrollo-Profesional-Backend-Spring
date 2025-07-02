@@ -21,24 +21,17 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
         </dependency>
-
-        <!-- Spring Cloud Config Client -->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-config</artifactId>
-        </dependency>
-
-        <!-- Spring Boot Starter Data JPA -->
+        
+        <!-- Spring Boot Starter Data R2DBC -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
+            <artifactId>spring-boot-starter-data-r2dbc</artifactId>
         </dependency>
 
-        <!-- H2 Database (for demo purposes) -->
+        <!-- H2 Database R2DBC Driver -->
         <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <scope>runtime</scope>
+            <groupId>io.r2dbc</groupId>
+            <artifactId>r2dbc-h2</artifactId>
         </dependency>
 
         <!-- Spring Boot Starter Kafka -->
@@ -47,10 +40,6 @@
             <artifactId>spring-kafka</artifactId>
         </dependency>
 
-        <!-- Spring Boot Starter WebFlux for reactive programming -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-webflux</artifactId>
-        </dependency>
+
     </dependencies>
 </project> 

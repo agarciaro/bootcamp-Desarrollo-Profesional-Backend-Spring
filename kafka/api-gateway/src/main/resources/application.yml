@@ -4,46 +4,48 @@ server:
 spring:
   application:
     name: api-gateway
+  main:
+    web-application-type: reactive
   cloud:
-    config:
-      uri: http://localhost:8888
     gateway:
-      discovery:
-        locator:
-          enabled: true
-          lower-case-service-id: true
-      routes:
-        # Route for User Service
-        - id: user-service
-          uri: lb://user-service
-          predicates:
-            - Path=/api/users/**
-          filters:
-            - StripPrefix=1
-            - name: CircuitBreaker
-              args:
-                name: user-service-circuit-breaker
-                fallbackUri: forward:/fallback/user-service
+      server:
+        webflux:
+          discovery:
+            locator:
+              enabled: true
+              lower-case-service-id: true
+          routes:
+            # Route for User Service
+            - id: user-service
+              uri: lb://user-service
+              predicates:
+                - Path=/api/users/**
+              filters:
+                - StripPrefix=1
+                - name: CircuitBreaker
+                  args:
+                    name: user-service-circuit-breaker
+                    fallbackUri: forward:/fallback/user-service
 
-        # Route for Order Service
-        - id: order-service
-          uri: lb://order-service
-          predicates:
-            - Path=/api/orders/**
-          filters:
-            - StripPrefix=1
-            - name: CircuitBreaker
-              args:
-                name: order-service-circuit-breaker
-                fallbackUri: forward:/fallback/order-service
+            # Route for Order Service
+            - id: order-service
+              uri: lb://order-service
+              predicates:
+                - Path=/api/orders/**
+              filters:
+                - StripPrefix=1
+                - name: CircuitBreaker
+                  args:
+                    name: order-service-circuit-breaker
+                    fallbackUri: forward:/fallback/order-service
 
-        # Route for Notification Service
-        - id: notification-service
-          uri: lb://notification-service
-          predicates:
-            - Path=/api/notifications/**
-          filters:
-            - StripPrefix=1
+            # Route for Notification Service
+            - id: notification-service
+              uri: lb://notification-service
+              predicates:
+                - Path=/api/notifications/**
+              filters:
+                - StripPrefix=1
 
 # Eureka Client Configuration
 eureka:

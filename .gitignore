@@ -34,3 +34,5 @@ target
 /first-microservice/.mvn
 /restaurant/.mvn
 /restaurant/files
+/kafka/.vscode
+kafka/api-gateway/.factorypath
