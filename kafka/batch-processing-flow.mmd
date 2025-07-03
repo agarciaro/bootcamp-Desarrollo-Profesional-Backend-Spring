@@ -1,0 +1,87 @@
+%% Batch Processing Flow
+graph TB
+    subgraph "Input Sources"
+        CSV[CSV File<br/>inventory-input.csv]
+        API[REST API<br/>Manual Trigger]
+        SCHED[Quartz Scheduler<br/>Daily at 2 AM]
+    end
+    
+    subgraph "Spring Batch Job"
+        subgraph "Step 1: Validate & Process"
+            READER[CSV Reader<br/>FlatFileItemReader]
+            PROCESSOR[Item Processor<br/>Validation & Transformation]
+            WRITER[Database Writer<br/>JdbcBatchItemWriter]
+        end
+        
+        subgraph "Step 2: Generate Alerts"
+            ALERT_TASKLET[Alert Tasklet<br/>Low Stock Detection]
+            ALERT_DB[(Alert Database)]
+        end
+        
+        subgraph "Step 3: Send Notifications"
+            NOTIF_TASKLET[Notification Tasklet<br/>Kafka Producer]
+            KAFKA[Kafka Topic<br/>inventory-notifications]
+        end
+    end
+    
+    subgraph "Database Layer"
+        INVENTORY_DB[(Inventory Database<br/>H2/PostgreSQL)]
+        BATCH_DB[(Batch Metadata<br/>Job History)]
+    end
+    
+    subgraph "Monitoring & Observability"
+        METRICS[Prometheus Metrics]
+        LOGS[Structured Logging]
+        HEALTH[Health Checks]
+    end
+    
+    subgraph "External Services"
+        NOTIFICATION_SVC[Notification Service]
+        ANALYTICS_SVC[Analytics Service]
+    end
+    
+    %% Input Flow
+    CSV --> READER
+    API --> READER
+    SCHED --> READER
+    
+    %% Processing Flow
+    READER --> PROCESSOR
+    PROCESSOR --> WRITER
+    WRITER --> INVENTORY_DB
+    
+    %% Alert Flow
+    INVENTORY_DB --> ALERT_TASKLET
+    ALERT_TASKLET --> ALERT_DB
+    
+    %% Notification Flow
+    INVENTORY_DB --> NOTIF_TASKLET
+    NOTIF_TASKLET --> KAFKA
+    KAFKA --> NOTIFICATION_SVC
+    KAFKA --> ANALYTICS_SVC
+    
+    %% Monitoring
+    INVENTORY_DB --> METRICS
+    BATCH_DB --> METRICS
+    READER --> LOGS
+    PROCESSOR --> LOGS
+    WRITER --> LOGS
+    ALERT_TASKLET --> LOGS
+    NOTIF_TASKLET --> LOGS
+    
+    %% Health Checks
+    INVENTORY_DB --> HEALTH
+    BATCH_DB --> HEALTH
+    
+    %% Styling
+    classDef inputClass fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef processClass fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef dbClass fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    classDef monitorClass fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef serviceClass fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+    
+    class CSV,API,SCHED inputClass
+    class READER,PROCESSOR,WRITER,ALERT_TASKLET,NOTIF_TASKLET processClass
+    class INVENTORY_DB,BATCH_DB,ALERT_DB dbClass
+    class METRICS,LOGS,HEALTH monitorClass
+    class NOTIFICATION_SVC,ANALYTICS_SVC,KAFKA serviceClass 

@@ -1,0 +1,78 @@
+spring:
+  profiles:
+    active: test
+  
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: 
+  
+  h2:
+    console:
+      enabled: false
+  
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+        dialect: org.hibernate.dialect.H2Dialect
+  
+  batch:
+    job:
+      enabled: false
+      inventory:
+        chunk-size: 10
+        retry-limit: 2
+        skip-limit: 5
+        input-file: classpath:data/test-inventory.csv
+        output-file: classpath:data/test-output.csv
+        error-file: classpath:data/test-errors.csv
+        low-stock-threshold: 5
+        expensive-threshold: 50.0
+        cron: "0 0 2 * * ?"
+  
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
+
+# Kafka configuration for tests (mocked)
+kafka:
+  bootstrap-servers: localhost:9092
+  topics:
+    inventory-notifications: test-inventory-notifications
+  consumer:
+    group-id: test-batch-service-group
+    auto-offset-reset: earliest
+
+# Logging for tests
+logging:
+  level:
+    com.bootcamp.batch: INFO
+    org.springframework.batch: INFO
+    org.springframework.kafka: WARN
+    org.springframework.scheduling: WARN
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+# Server configuration for tests
+server:
+  port: 0  # Use random port for tests
+
+# Management endpoints for tests
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never
+
+# Disable scheduling for tests
+scheduling:
+  enabled: false 

@@ -16,6 +16,7 @@ This project demonstrates a complete **reactive microservices architecture** wit
 - **Order Service** (Port: 8082) - Order management with service-to-service communication
 - **Notification Service** (Port: 8083) - Event-driven notifications
 - **Analytics Service** (Port: 8084) - Real-time analytics with Kafka Streams
+- **Batch Service** (Port: 8086) - Spring Batch processing for inventory management
 
 ### Communication Patterns
 - **Reactive REST APIs** - Non-blocking synchronous communication between services using Spring WebFlux
@@ -88,6 +89,10 @@ mvn spring-boot:run
 
 # 7. Start Analytics Service (in a new terminal)
 cd ../analytics-service
+mvn spring-boot:run
+
+# 8. Start Batch Service (in a new terminal)
+cd ../batch-service
 mvn spring-boot:run
 ```
 
@@ -168,6 +173,18 @@ docker-compose -f docker-compose-full.yml down
 - **Health Check**: http://localhost:8084/analytics/health
 - **Kafka Streams Status**: http://localhost:8084/analytics/streams/status
 - **H2 Console**: http://localhost:8084/h2-console
+
+### Batch Service
+- **Base URL**: http://localhost:8086
+- **Batch Jobs**: http://localhost:8086/api/batch/jobs
+- **Inventory Management**: http://localhost:8086/api/inventory
+- **Execute Job**: POST http://localhost:8086/api/batch/jobs/execute
+- **Job History**: GET http://localhost:8086/api/batch/jobs/{jobName}/history
+- **Job Statistics**: GET http://localhost:8086/api/batch/jobs/{jobName}/statistics
+- **Inventory Summary**: GET http://localhost:8086/api/inventory/summary
+- **Low Stock Items**: GET http://localhost:8086/api/inventory/items/low-stock
+- **Health Check**: http://localhost:8086/api/batch/jobs/health
+- **H2 Console**: http://localhost:8086/h2-console
 
 ### Kafka UI (Docker)
 - **Kafka UI**: http://localhost:80 (when running with Docker Compose)

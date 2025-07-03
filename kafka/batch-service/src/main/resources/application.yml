@@ -1,0 +1,107 @@
+server:
+  port: 8086
+
+spring:
+  application:
+    name: batch-service
+  
+  # Database Configuration
+  datasource:
+    url: jdbc:h2:mem:batchdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: password
+  
+  # JPA Configuration
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        format_sql: true
+  
+  # H2 Console
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  
+  # Batch Configuration
+  batch:
+    job:
+      enabled: false  # Disable auto-execution on startup
+    jdbc:
+      initialize-schema: always
+  
+  # Kafka Configuration
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: batch-service-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+  
+  # Quartz Scheduler Configuration
+  quartz:
+    job-store-type: memory
+    properties:
+      org.quartz.scheduler.instanceName: BatchScheduler
+      org.quartz.scheduler.instanceId: AUTO
+      org.quartz.threadPool.class: org.quartz.simpl.SimpleThreadPool
+      org.quartz.threadPool.threadCount: 5
+
+# Eureka Configuration
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+
+# Management and Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,batch
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+# Batch Job Configuration
+batch:
+  job:
+    inventory:
+      name: inventoryProcessingJob
+      cron: "0 0 2 * * ?"  # Daily at 2 AM
+      chunk-size: 100
+      retry-limit: 3
+      skip-limit: 10
+      input-file: classpath:data/inventory-input.csv
+      output-file: classpath:data/inventory-output.csv
+      error-file: classpath:data/inventory-errors.csv
+  
+  # Security Configuration
+  security:
+    jwt:
+      secret: batch-service-secret-key-2024
+      expiration: 86400000  # 24 hours
+
+# Logging Configuration
+logging:
+  level:
+    com.bootcamp.batch: DEBUG
+    org.springframework.batch: DEBUG
+    org.springframework.security: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n" 

@@ -1,0 +1,21 @@
+product_code,product_name,category,quantity,unit_price,supplier,status
+LAP001,MacBook Pro 13",Electronics,25,1299.99,Apple Inc.,ACTIVE
+LAP002,Dell XPS 15,Electronics,18,1499.99,Dell Technologies,ACTIVE
+LAP003,HP Pavilion,Electronics,32,899.99,HP Inc.,ACTIVE
+PHO001,iPhone 15 Pro,Electronics,45,999.99,Apple Inc.,ACTIVE
+PHO002,Samsung Galaxy S24,Electronics,38,1199.99,Samsung Electronics,ACTIVE
+PHO003,Google Pixel 8,Electronics,22,699.99,Google LLC,ACTIVE
+TAB001,iPad Air,Electronics,15,599.99,Apple Inc.,ACTIVE
+TAB002,Samsung Galaxy Tab,Electronics,28,449.99,Samsung Electronics,ACTIVE
+ACC001,AirPods Pro,Electronics,67,249.99,Apple Inc.,ACTIVE
+ACC002,Logitech MX Master,Electronics,42,79.99,Logitech,ACTIVE
+ACC003,USB-C Cable,Electronics,150,19.99,Generic Supplier,ACTIVE
+BOOK001,Spring Boot in Action,Books,12,49.99,Manning Publications,ACTIVE
+BOOK002,Clean Code,Books,8,39.99,Prentice Hall,ACTIVE
+BOOK003,Design Patterns,Books,15,44.99,Addison-Wesley,ACTIVE
+DESK001,Standing Desk,Office,5,299.99,OfficeMax,ACTIVE
+DESK002,Ergonomic Chair,Office,8,199.99,OfficeMax,ACTIVE
+DESK003,Monitor Stand,Office,25,89.99,Generic Supplier,ACTIVE
+NET001,WiFi Router,Electronics,12,129.99,TP-Link,ACTIVE
+NET002,Ethernet Cable,Electronics,200,9.99,Generic Supplier,ACTIVE
+NET003,Network Switch,Electronics,6,89.99,Netgear,ACTIVE 

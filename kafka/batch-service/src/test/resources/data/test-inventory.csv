@@ -1,0 +1,11 @@
+productCode,productName,category,quantity,unitPrice,supplier,status
+PROD001,Laptop Dell XPS,Electronics,15,1299.99,Dell Inc,ACTIVE
+PROD002,Wireless Mouse,Electronics,45,29.99,Logitech,ACTIVE
+PROD003,Office Chair,Furniture,8,199.99,IKEA,ACTIVE
+PROD004,Desk Lamp,Home,25,49.99,Philips,ACTIVE
+PROD005,USB Cable,Electronics,100,9.99,Belkin,ACTIVE
+PROD006,Monitor 24",Electronics,3,299.99,Samsung,ACTIVE
+PROD007,Keyboard Mechanical,Electronics,12,89.99,Cherry,ACTIVE
+PROD008,Desk Organizer,Office,30,19.99,Staples,ACTIVE
+PROD009,Webcam HD,Electronics,0,79.99,Logitech,ACTIVE
+PROD010,Headphones Wireless,Electronics,5,149.99,Sony,ACTIVE 

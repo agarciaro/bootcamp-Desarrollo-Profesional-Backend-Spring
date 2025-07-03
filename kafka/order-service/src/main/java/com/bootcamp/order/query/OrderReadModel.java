@@ -68,7 +68,7 @@ public class OrderReadModel {
         this.isDeleted = false;
     }
 
-    // Constructor con parámetros
+    // Constructor with parameters
     public OrderReadModel(Long id, Long userId, BigDecimal totalAmount) {
         this();
         this.id = id;

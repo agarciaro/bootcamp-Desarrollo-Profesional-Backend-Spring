@@ -1,38 +1,41 @@
-# 📊 Diagramas de Arquitectura de Microservicios
+# 📊 Microservices Architecture Diagrams
 
-Este directorio contiene diagramas Mermaid que documentan la arquitectura completa de microservicios con Kafka Streams.
+This directory contains Mermaid diagrams that document the complete microservices architecture with Kafka Streams.
 
-## 📁 Archivos de Diagramas
+## 📁 Diagram Files
 
-### 🏗️ **Diagrama Principal**
-- **`architecture-diagram.mmd`** - Infraestructura completa de microservicios
-  - Todos los servicios, bases de datos y conexiones Kafka
-  - Topics de eventos y flujos de datos
-  - Estilos diferenciados por tipo de componente
+### 🏗️ **Main Diagram**
+- **`architecture-diagram.mmd`** - Complete microservices infrastructure
+  - All services, databases, and Kafka connections
+  - Event topics and data flows
+  - Differentiated styles by component type
 
-### 🔄 **Diagramas de Secuencia**
-- **`flow-sequences.mmd`** - Flujo de registro de usuarios
-- **`order-creation-flow.mmd`** - Creación de órdenes con CQRS
-- **`analytics-flow.mmd`** - Procesamiento de analytics en tiempo real
+### 🔄 **Sequence Diagrams**
+- **`flow-sequences.mmd`** - User registration flow
+- **`order-creation-flow.mmd`** - Order creation with CQRS
+- **`analytics-flow.mmd`** - Real-time analytics processing
 
-### 🏛️ **Patrones de Arquitectura**
-- **`cqrs-pattern.mmd`** - Patrón CQRS en Order Service
-- **`event-driven-flow.mmd`** - Comunicación basada en eventos
-- **`kafka-streams.mmd`** - Arquitectura de Kafka Streams
+### 🏛️ **Architecture Patterns**
+- **`cqrs-pattern.mmd`** - CQRS pattern in Order Service
+- **`event-driven-flow.mmd`** - Event-driven communication
+- **`kafka-streams.mmd`** - Kafka Streams architecture
 
-### 🚀 **Stack Tecnológico y Despliegue**
-- **`technology-stack.mmd`** - Stack tecnológico completo
-- **`deployment-architecture.mmd`** - Arquitectura de despliegue
+### 🚀 **Technology Stack and Deployment**
+- **`technology-stack.mmd`** - Complete technology stack
+- **`deployment-architecture.mmd`** - Deployment architecture
 
-## 🎯 Cómo Usar los Diagramas
+### ⚙️ **Batch Processing**
+- **`batch-processing-flow.mmd`** - Batch processing flow with Spring Batch
 
-### 1. **Visualización en Línea**
-1. Ve a [Mermaid Live Editor](https://mermaid.live/)
-2. Copia el contenido de cualquier archivo `.mmd`
-3. El diagrama se renderizará automáticamente
+## 🎯 How to Use the Diagrams
 
-### 2. **En GitHub/GitLab**
-Los diagramas se renderizan automáticamente en archivos `.md` con bloques Mermaid:
+### 1. **Online Visualization**
+1. Go to [Mermaid Live Editor](https://mermaid.live/)
+2. Copy the content of any `.mmd` file
+3. The diagram will render automatically
+
+### 2. **In GitHub/GitLab**
+Diagrams render automatically in `.md` files with Mermaid blocks:
 
 ```markdown
 ```mermaid
@@ -41,82 +44,87 @@ graph TB
 ```
 ```
 
-### 3. **En Documentación Técnica**
-Incluye estos diagramas en tu documentación técnica para explicar:
-- Arquitectura del sistema
-- Flujos de datos
-- Patrones de diseño
-- Procesos de despliegue
+### 3. **In Technical Documentation**
+Include these diagrams in your technical documentation to explain:
+- System architecture
+- Data flows
+- Design patterns
+- Deployment processes
 
-## 🔧 Características de los Diagramas
+## 🔧 Diagram Features
 
-### ✅ **Sintaxis Correcta**
-- Cada diagrama está en un archivo separado
-- Sintaxis Mermaid válida
-- Sin errores de parsing
+### ✅ **Correct Syntax**
+- Each diagram is in a separate file
+- Valid Mermaid syntax
+- No parsing errors
 
-### 🎨 **Visualización Mejorada**
-- Emojis descriptivos para mejor identificación
-- Colores diferenciados por tipo de componente
-- Subgrafos organizados lógicamente
-- Conexiones claras entre componentes
+### 🎨 **Enhanced Visualization**
+- Descriptive emojis for better identification
+- Differentiated colors by component type
+- Logically organized subgraphs
+- Clear connections between components
 
-### 📋 **Tipos de Componentes**
-- **Servicios** (azul) - Microservicios de negocio
-- **Infraestructura** (morado) - Servicios de infraestructura
-- **Bases de Datos** (verde) - Almacenamiento de datos
-- **Kafka** (naranja) - Plataforma de eventos
-- **Topics** (rojo) - Topics de Kafka
+### 📋 **Component Types**
+- **Services** (blue) - Business microservices
+- **Infrastructure** (purple) - Infrastructure services
+- **Databases** (green) - Data storage
+- **Kafka** (orange) - Event platform
+- **Topics** (red) - Kafka topics
 
-## 🚀 Flujos Principales Documentados
+## 🚀 Main Documented Flows
 
-### 1. **Registro de Usuarios**
+### 1. **User Registration**
 ```
-Cliente → Gateway → User Service → Kafka → Notification Service + Analytics Service
-```
-
-### 2. **Creación de Órdenes (CQRS)**
-```
-Cliente → Gateway → Order Service → User Service → Write DB → Kafka → Analytics Service
+Client → Gateway → User Service → Kafka → Notification Service + Analytics Service
 ```
 
-### 3. **Analytics en Tiempo Real**
+### 2. **Order Creation (CQRS)**
+```
+Client → Gateway → Order Service → User Service → Write DB → Kafka → Analytics Service
+```
+
+### 3. **Real-time Analytics**
 ```
 Kafka Streams → Windowed Aggregations → Real-time Calculations → Analytics DB
 ```
 
-### 4. **Comunicación Event-Driven**
+### 4. **Event-Driven Communication**
 ```
 Event Sources → Kafka Topics → Event Consumers → Analytics Output
 ```
 
-## 📈 Beneficios de esta Documentación
+### 5. **Batch Processing**
+```
+CSV Input → Spring Batch → Database → Alerts → Kafka Notifications
+```
 
-### 🔍 **Claridad Visual**
-- Entendimiento rápido de la arquitectura
-- Identificación de dependencias
-- Visualización de flujos de datos
+## 📈 Benefits of this Documentation
 
-### 🛠️ **Facilita el Desarrollo**
-- Referencia para nuevos desarrolladores
-- Guía para decisiones de arquitectura
-- Documentación de patrones implementados
+### 🔍 **Visual Clarity**
+- Quick understanding of architecture
+- Dependency identification
+- Data flow visualization
 
-### 📊 **Análisis y Optimización**
-- Identificación de cuellos de botella
-- Planificación de escalabilidad
-- Optimización de flujos de datos
+### 🛠️ **Facilitates Development**
+- Reference for new developers
+- Guide for architectural decisions
+- Documentation of implemented patterns
 
-## 🔄 Actualización de Diagramas
+### 📊 **Analysis and Optimization**
+- Bottleneck identification
+- Scalability planning
+- Data flow optimization
 
-Para mantener los diagramas actualizados:
+## 🔄 Diagram Updates
 
-1. **Modifica el código** según sea necesario
-2. **Actualiza los diagramas** correspondientes
-3. **Verifica la sintaxis** en Mermaid Live Editor
-4. **Actualiza la documentación** relacionada
+To keep diagrams updated:
 
-## 📚 Recursos Adicionales
+1. **Modify code** as needed
+2. **Update corresponding diagrams**
+3. **Verify syntax** in Mermaid Live Editor
+4. **Update related documentation**
+
+## 📚 Additional Resources
 
 - [Mermaid Documentation](https://mermaid.js.org/)
 - [Mermaid Live Editor](https://mermaid.live/)
@@ -124,4 +132,4 @@ Para mantener los diagramas actualizados:
 
 ---
 
-**Nota**: Todos los diagramas están optimizados para renderizado en GitHub, GitLab y editores compatibles con Mermaid. 
+**Note**: All diagrams are optimized for rendering in GitHub, GitLab, and Mermaid-compatible editors. 
