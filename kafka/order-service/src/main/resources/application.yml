@@ -41,15 +41,6 @@ eureka:
   instance:
     prefer-ip-address: true
 
-# Feign Client Configuration
-feign:
-  client:
-    config:
-      default:
-        connect-timeout: 5000
-        read-timeout: 5000
-        logger-level: basic
-
 # Management endpoints
 management:
   endpoints:

@@ -15,6 +15,11 @@ public class Lec02MonoSubscribe {
 			//,
 			//subscription -> subscription.request(1) //No tiene sentido, pero se puede hacer
 		);
+		
+		publisher.subscribe(
+				i -> log.info("2Received value: {}", i),
+				err -> log.error("2Error received: {}", err.getMessage()),
+				() -> log.info("2Completed with no errors"));
 	
 	}
 }
