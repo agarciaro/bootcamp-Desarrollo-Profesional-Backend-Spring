@@ -1,0 +1,95 @@
+%% Microservices Architecture with Kafka Streams - Main Infrastructure Diagram
+%% This file contains the main architecture diagram
+
+graph TB
+    %% External Clients
+    Client[🌐 External Clients<br/>Web/Mobile Apps]
+    
+    %% API Gateway
+    Gateway[🚪 API Gateway<br/>Port: 8080<br/>Spring Cloud Gateway]
+    
+    %% Core Infrastructure Services
+    Discovery[🔍 Discovery Service<br/>Port: 8761<br/>Eureka Server]
+    Config[⚙️ Config Service<br/>Port: 8888<br/>Spring Cloud Config]
+    
+    %% Business Services
+    UserService[👤 User Service<br/>Port: 8081<br/>User Management]
+    OrderService[📦 Order Service<br/>Port: 8082<br/>Order Management + CQRS]
+    NotificationService[🔔 Notification Service<br/>Port: 8083<br/>Event-driven Notifications]
+    AnalyticsService[📊 Analytics Service<br/>Port: 8084<br/>Real-time Analytics + Kafka Streams]
+    
+    %% Kafka Infrastructure
+    Kafka[📨 Apache Kafka<br/>Port: 9092<br/>Event Streaming Platform]
+    KafkaUI[🖥️ Kafka UI<br/>Port: 8080<br/>Kafka Management]
+    
+    %% Databases
+    UserDB[(🗄️ User DB<br/>H2 In-Memory)]
+    OrderDB[(🗄️ Order DB<br/>H2 In-Memory)]
+    OrderReadDB[(🗄️ Order Read DB<br/>H2 In-Memory)]
+    NotificationDB[(🗄️ Notification DB<br/>H2 In-Memory)]
+    AnalyticsDB[(🗄️ Analytics DB<br/>H2 In-Memory)]
+    
+    %% Kafka Topics
+    UserEvents[📢 user-events<br/>User CRUD Events]
+    OrderEvents[📢 order-events<br/>Order CRUD Events]
+    AnalyticsEvents[📢 analytics-events<br/>General Analytics]
+    RevenueAnalytics[📢 revenue-analytics<br/>Revenue Metrics]
+    UserActivityAnalytics[📢 user-activity-analytics<br/>User Activity]
+    AnalyticsAlerts[📢 analytics-alerts<br/>Real-time Alerts]
+    
+    %% Connections
+    Client --> Gateway
+    Gateway --> Discovery
+    Gateway --> UserService
+    Gateway --> OrderService
+    Gateway --> AnalyticsService
+    
+    %% Service Discovery
+    UserService --> Discovery
+    OrderService --> Discovery
+    NotificationService --> Discovery
+    AnalyticsService --> Discovery
+    Config --> Discovery
+    
+    %% Configuration
+    UserService --> Config
+    OrderService --> Config
+    NotificationService --> Config
+    AnalyticsService --> Config
+    
+    %% Databases
+    UserService --> UserDB
+    OrderService --> OrderDB
+    OrderService --> OrderReadDB
+    NotificationService --> NotificationDB
+    AnalyticsService --> AnalyticsDB
+    
+    %% Kafka Event Flows
+    UserService --> UserEvents
+    OrderService --> OrderEvents
+    
+    %% Analytics Stream Processing
+    UserEvents --> AnalyticsService
+    OrderEvents --> AnalyticsService
+    AnalyticsService --> AnalyticsEvents
+    AnalyticsService --> RevenueAnalytics
+    AnalyticsService --> UserActivityAnalytics
+    AnalyticsService --> AnalyticsAlerts
+    
+    %% Notification Flow
+    UserEvents --> NotificationService
+    
+    %% Kafka Management
+    Kafka --> KafkaUI
+    
+    %% Styling
+    classDef service fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef infrastructure fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef database fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    classDef kafka fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef topic fill:#ffebee,stroke:#c62828,stroke-width:2px
+    
+    class Gateway,UserService,OrderService,NotificationService,AnalyticsService service
+    class Discovery,Config,Kafka,KafkaUI infrastructure
+    class UserDB,OrderDB,OrderReadDB,NotificationDB,AnalyticsDB database
+    class UserEvents,OrderEvents,AnalyticsEvents,RevenueAnalytics,UserActivityAnalytics,AnalyticsAlerts topic 

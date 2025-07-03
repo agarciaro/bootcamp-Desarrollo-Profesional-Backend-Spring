@@ -1,0 +1,60 @@
+%% Technology Stack Overview
+graph TB
+    subgraph "Frontend Layer"
+        WebApp[Web Application]
+        MobileApp[Mobile Application]
+    end
+    
+    subgraph "API Layer"
+        Gateway[Spring Cloud Gateway]
+    end
+    
+    subgraph "Microservices Layer"
+        UserService[User Service<br/>Spring Boot + WebFlux]
+        OrderService[Order Service<br/>Spring Boot + CQRS]
+        NotificationService[Notification Service<br/>Spring Boot + Kafka]
+        AnalyticsService[Analytics Service<br/>Spring Boot + Kafka Streams]
+    end
+    
+    subgraph "Infrastructure Layer"
+        Discovery[Eureka Server<br/>Service Discovery]
+        Config[Spring Cloud Config<br/>Configuration]
+        Kafka[Apache Kafka<br/>Event Streaming]
+        KafkaUI[Kafka UI<br/>Management Interface]
+    end
+    
+    subgraph "Data Layer"
+        UserDB[(H2 Database<br/>User Data)]
+        OrderDB[(H2 Database<br/>Order Write Model)]
+        OrderReadDB[(H2 Database<br/>Order Read Model)]
+        NotificationDB[(H2 Database<br/>Notification Data)]
+        AnalyticsDB[(H2 Database<br/>Analytics Data)]
+    end
+    
+    WebApp --> Gateway
+    MobileApp --> Gateway
+    Gateway --> UserService
+    Gateway --> OrderService
+    Gateway --> AnalyticsService
+    
+    UserService --> Discovery
+    OrderService --> Discovery
+    NotificationService --> Discovery
+    AnalyticsService --> Discovery
+    
+    UserService --> Config
+    OrderService --> Config
+    NotificationService --> Config
+    AnalyticsService --> Config
+    
+    UserService --> UserDB
+    OrderService --> OrderDB
+    OrderService --> OrderReadDB
+    NotificationService --> NotificationDB
+    AnalyticsService --> AnalyticsDB
+    
+    UserService --> Kafka
+    OrderService --> Kafka
+    Kafka --> NotificationService
+    Kafka --> AnalyticsService
+    Kafka --> KafkaUI 

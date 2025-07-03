@@ -1,0 +1,36 @@
+%% CQRS Pattern in Order Service
+graph TB
+    subgraph "Command Side (Write)"
+        OrderController[Order Controller]
+        OrderCommandService[Order Command Service]
+        OrderRepository[Order Repository]
+        WriteDB[(Write Database)]
+    end
+    
+    subgraph "Query Side (Read)"
+        OrderQueryService[Order Query Service]
+        OrderReadModelRepository[Order Read Model Repository]
+        ReadDB[(Read Database)]
+    end
+    
+    subgraph "Event Processing"
+        OrderEventProcessor[Order Event Processor]
+        UserServiceClient[User Service Client]
+    end
+    
+    subgraph "Kafka"
+        OrderEvents[order-events Topic]
+    end
+    
+    OrderController --> OrderCommandService
+    OrderCommandService --> OrderRepository
+    OrderRepository --> WriteDB
+    OrderCommandService --> OrderEvents
+    
+    OrderController --> OrderQueryService
+    OrderQueryService --> OrderReadModelRepository
+    OrderReadModelRepository --> ReadDB
+    
+    OrderEvents --> OrderEventProcessor
+    OrderEventProcessor --> UserServiceClient
+    OrderEventProcessor --> OrderReadModelRepository 

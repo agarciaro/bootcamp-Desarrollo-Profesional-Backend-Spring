@@ -1,0 +1,36 @@
+%% Kafka Streams Processing Architecture
+graph TB
+    subgraph "Input Streams"
+        UserEventStream[User Events Stream]
+        OrderEventStream[Order Events Stream]
+    end
+    
+    subgraph "Kafka Streams Processor"
+        StreamBuilder[Stream Builder]
+        WindowedAggregations[Windowed Aggregations]
+        RealTimeCalculations[Real-time Calculations]
+        AlertGenerator[Alert Generator]
+    end
+    
+    subgraph "Output Streams"
+        RevenueStream[Revenue Analytics Stream]
+        UserActivityStream[User Activity Stream]
+        AlertStream[Alert Stream]
+    end
+    
+    subgraph "Analytics Storage"
+        AnalyticsDB[(Analytics Database)]
+        MetricsCache[In-Memory Metrics]
+    end
+    
+    UserEventStream --> StreamBuilder
+    OrderEventStream --> StreamBuilder
+    StreamBuilder --> WindowedAggregations
+    StreamBuilder --> RealTimeCalculations
+    WindowedAggregations --> RevenueStream
+    RealTimeCalculations --> UserActivityStream
+    RevenueStream --> AnalyticsDB
+    UserActivityStream --> AnalyticsDB
+    RealTimeCalculations --> AlertGenerator
+    AlertGenerator --> AlertStream
+    AlertStream --> MetricsCache 

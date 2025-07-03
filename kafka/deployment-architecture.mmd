@@ -1,0 +1,59 @@
+%% Deployment Architecture
+graph TB
+    subgraph "Load Balancer"
+        LB[Load Balancer<br/>Nginx/HAProxy]
+    end
+    
+    subgraph "API Gateway Cluster"
+        Gateway1[Gateway Instance 1]
+        Gateway2[Gateway Instance 2]
+    end
+    
+    subgraph "Service Clusters"
+        UserCluster[User Service Cluster]
+        OrderCluster[Order Service Cluster]
+        NotificationCluster[Notification Service Cluster]
+        AnalyticsCluster[Analytics Service Cluster]
+    end
+    
+    subgraph "Infrastructure Services"
+        DiscoveryCluster[Eureka Cluster]
+        ConfigCluster[Config Service Cluster]
+        KafkaCluster[Kafka Cluster<br/>3 Brokers]
+        Zookeeper[Zookeeper<br/>3 Nodes]
+    end
+    
+    subgraph "Database Layer"
+        UserDBCluster[(User DB Cluster)]
+        OrderDBCluster[(Order DB Cluster)]
+        AnalyticsDBCluster[(Analytics DB Cluster)]
+    end
+    
+    LB --> Gateway1
+    LB --> Gateway2
+    Gateway1 --> UserCluster
+    Gateway1 --> OrderCluster
+    Gateway1 --> AnalyticsCluster
+    Gateway2 --> UserCluster
+    Gateway2 --> OrderCluster
+    Gateway2 --> AnalyticsCluster
+    
+    UserCluster --> DiscoveryCluster
+    OrderCluster --> DiscoveryCluster
+    NotificationCluster --> DiscoveryCluster
+    AnalyticsCluster --> DiscoveryCluster
+    
+    UserCluster --> ConfigCluster
+    OrderCluster --> ConfigCluster
+    NotificationCluster --> ConfigCluster
+    AnalyticsCluster --> ConfigCluster
+    
+    UserCluster --> UserDBCluster
+    OrderCluster --> OrderDBCluster
+    AnalyticsCluster --> AnalyticsDBCluster
+    
+    UserCluster --> KafkaCluster
+    OrderCluster --> KafkaCluster
+    KafkaCluster --> NotificationCluster
+    KafkaCluster --> AnalyticsCluster
+    KafkaCluster --> Zookeeper 

@@ -1,0 +1,21 @@
+%% Order Creation Flow with CQRS
+sequenceDiagram
+    participant Client
+    participant Gateway
+    participant OrderService
+    participant UserService
+    participant Kafka
+    participant AnalyticsService
+    
+    Client->>Gateway: POST /api/orders
+    Gateway->>OrderService: Create Order Command
+    OrderService->>UserService: Validate User (HTTP)
+    UserService->>OrderService: User Data
+    OrderService->>OrderService: Save Order (Write Model)
+    OrderService->>Kafka: Publish ORDER_CREATED event
+    Kafka->>AnalyticsService: Consume ORDER_CREATED
+    AnalyticsService->>AnalyticsService: Process Order Analytics
+    AnalyticsService->>Kafka: Publish Revenue Analytics
+    AnalyticsService->>Kafka: Publish Volume Alerts (if needed)
+    OrderService->>Gateway: Return Order
+    Gateway->>Client: Order Created Response 

@@ -1,0 +1,99 @@
+%% Microservices Flow Sequences
+%% Each sequence diagram is separated by comments
+
+%% 1. User Registration Flow
+sequenceDiagram
+    participant Client
+    participant Gateway
+    participant UserService
+    participant Kafka
+    participant NotificationService
+    participant AnalyticsService
+    
+    Client->>Gateway: POST /api/users
+    Gateway->>UserService: Create User
+    UserService->>UserService: Save to DB
+    UserService->>Kafka: Publish USER_CREATED event
+    Kafka->>NotificationService: Consume USER_CREATED
+    NotificationService->>NotificationService: Send Welcome Email
+    Kafka->>AnalyticsService: Consume USER_CREATED
+    AnalyticsService->>AnalyticsService: Update User Metrics
+    AnalyticsService->>Kafka: Publish analytics events
+    UserService->>Gateway: Return User DTO
+    Gateway->>Client: User Created Response
+
+%% 2. Order Creation Flow with CQRS
+sequenceDiagram
+    participant Client
+    participant Gateway
+    participant OrderService
+    participant UserService
+    participant Kafka
+    participant AnalyticsService
+    
+    Client->>Gateway: POST /api/orders
+    Gateway->>OrderService: Create Order Command
+    OrderService->>UserService: Validate User (HTTP)
+    UserService->>OrderService: User Data
+    OrderService->>OrderService: Save Order (Write Model)
+    OrderService->>Kafka: Publish ORDER_CREATED event
+    Kafka->>AnalyticsService: Consume ORDER_CREATED
+    AnalyticsService->>AnalyticsService: Process Order Analytics
+    AnalyticsService->>Kafka: Publish Revenue Analytics
+    AnalyticsService->>Kafka: Publish Volume Alerts (if needed)
+    OrderService->>Gateway: Return Order
+    Gateway->>Client: Order Created Response
+
+%% 3. Real-time Analytics Flow
+sequenceDiagram
+    participant Client
+    participant AnalyticsService
+    participant Kafka
+    participant StreamProcessor
+    
+    Client->>AnalyticsService: GET /analytics/dashboard
+    AnalyticsService->>AnalyticsService: Query Metrics from DB
+    AnalyticsService->>Client: Real-time Dashboard Data
+    
+    Note over Kafka,StreamProcessor: Kafka Streams Processing
+    Kafka->>StreamProcessor: Order Events Stream
+    Kafka->>StreamProcessor: User Events Stream
+    StreamProcessor->>StreamProcessor: Windowed Aggregations
+    StreamProcessor->>StreamProcessor: Real-time Calculations
+    StreamProcessor->>Kafka: Analytics Events
+    StreamProcessor->>Kafka: Revenue Analytics
+    StreamProcessor->>Kafka: User Activity Analytics
+    StreamProcessor->>Kafka: Alerts (if thresholds exceeded)
+
+%% 4. Order Status Update Flow
+sequenceDiagram
+    participant Client
+    participant Gateway
+    participant OrderService
+    participant Kafka
+    participant AnalyticsService
+    
+    Client->>Gateway: PUT /api/orders/{id}/status
+    Gateway->>OrderService: Update Order Status Command
+    OrderService->>OrderService: Update Order (Write Model)
+    OrderService->>Kafka: Publish ORDER_STATUS_UPDATED event
+    Kafka->>AnalyticsService: Consume Status Update
+    AnalyticsService->>AnalyticsService: Update Order Metrics
+    AnalyticsService->>Kafka: Publish Updated Analytics
+    OrderService->>Gateway: Return Updated Order
+    Gateway->>Client: Status Updated Response
+
+%% 5. Service Discovery and Configuration Flow
+sequenceDiagram
+    participant Service
+    participant Discovery
+    participant Config
+    participant Gateway
+    
+    Service->>Discovery: Register Service
+    Discovery->>Discovery: Store Service Info
+    Service->>Config: Request Configuration
+    Config->>Service: Return Config
+    Gateway->>Discovery: Discover Services
+    Discovery->>Gateway: Service List
+    Gateway->>Service: Route Request 

@@ -1,0 +1,20 @@
+%% Real-time Analytics Flow
+sequenceDiagram
+    participant Client
+    participant AnalyticsService
+    participant Kafka
+    participant StreamProcessor
+    
+    Client->>AnalyticsService: GET /analytics/dashboard
+    AnalyticsService->>AnalyticsService: Query Metrics from DB
+    AnalyticsService->>Client: Real-time Dashboard Data
+    
+    Note over Kafka,StreamProcessor: Kafka Streams Processing
+    Kafka->>StreamProcessor: Order Events Stream
+    Kafka->>StreamProcessor: User Events Stream
+    StreamProcessor->>StreamProcessor: Windowed Aggregations
+    StreamProcessor->>StreamProcessor: Real-time Calculations
+    StreamProcessor->>Kafka: Analytics Events
+    StreamProcessor->>Kafka: Revenue Analytics
+    StreamProcessor->>Kafka: User Activity Analytics
+    StreamProcessor->>Kafka: Alerts (if thresholds exceeded) 

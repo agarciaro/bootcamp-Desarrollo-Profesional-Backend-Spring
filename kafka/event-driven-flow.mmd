@@ -1,0 +1,33 @@
+%% Event-Driven Communication Flow
+graph LR
+    subgraph "Event Sources"
+        UserService[User Service]
+        OrderService[Order Service]
+    end
+    
+    subgraph "Kafka Topics"
+        UserEvents[user-events]
+        OrderEvents[order-events]
+    end
+    
+    subgraph "Event Consumers"
+        NotificationService[Notification Service]
+        AnalyticsService[Analytics Service]
+    end
+    
+    subgraph "Analytics Output"
+        AnalyticsEvents[analytics-events]
+        RevenueAnalytics[revenue-analytics]
+        UserActivityAnalytics[user-activity-analytics]
+        AnalyticsAlerts[analytics-alerts]
+    end
+    
+    UserService --> UserEvents
+    OrderService --> OrderEvents
+    UserEvents --> NotificationService
+    UserEvents --> AnalyticsService
+    OrderEvents --> AnalyticsService
+    AnalyticsService --> AnalyticsEvents
+    AnalyticsService --> RevenueAnalytics
+    AnalyticsService --> UserActivityAnalytics
+    AnalyticsService --> AnalyticsAlerts 
