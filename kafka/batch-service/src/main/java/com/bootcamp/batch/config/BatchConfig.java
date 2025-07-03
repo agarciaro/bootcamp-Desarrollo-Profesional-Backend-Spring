@@ -1,14 +1,7 @@
 package com.bootcamp.batch.config;
 
-import com.bootcamp.batch.listener.InventoryJobExecutionListener;
-import com.bootcamp.batch.listener.InventoryStepExecutionListener;
-import com.bootcamp.batch.processor.InventoryItemProcessor;
-import com.bootcamp.batch.reader.InventoryItemReader;
-import com.bootcamp.batch.writer.InventoryItemWriter;
-import com.bootcamp.batch.model.InventoryItem;
-import com.bootcamp.batch.dto.InventoryItemDto;
-import com.bootcamp.batch.tasklet.InventoryAlertTasklet;
-import com.bootcamp.batch.tasklet.NotificationTasklet;
+import javax.sql.DataSource;
+
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.job.builder.JobBuilder;
@@ -17,8 +10,6 @@ import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
-import org.springframework.batch.item.database.JdbcBatchItemWriter;
-import org.springframework.batch.item.database.builder.JdbcBatchItemWriterBuilder;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
 import org.springframework.batch.item.file.mapping.DefaultLineMapper;
@@ -27,10 +18,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.jdbc.core.DataClassRowMapper;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import javax.sql.DataSource;
+import com.bootcamp.batch.dto.InventoryItemDto;
+import com.bootcamp.batch.listener.InventoryJobExecutionListener;
+import com.bootcamp.batch.listener.InventoryStepExecutionListener;
+import com.bootcamp.batch.model.InventoryItem;
+import com.bootcamp.batch.processor.InventoryItemProcessor;
+import com.bootcamp.batch.tasklet.InventoryAlertTasklet;
+import com.bootcamp.batch.tasklet.NotificationTasklet;
+import com.bootcamp.batch.writer.InventoryItemWriter;
 
 @Configuration
 public class BatchConfig {
@@ -72,12 +69,13 @@ public class BatchConfig {
     @Bean
     public Step validateAndProcessStep(JobRepository jobRepository,
                                      PlatformTransactionManager transactionManager,
-                                     InventoryStepExecutionListener stepListener) {
+                                     InventoryStepExecutionListener stepListener,
+                                     DataSource dataSource) {
         return new StepBuilder("validateAndProcessStep", jobRepository)
                 .<InventoryItemDto, InventoryItem>chunk(chunkSize, transactionManager)
                 .reader(inventoryItemReader())
                 .processor(inventoryItemProcessor())
-                .writer(inventoryItemWriter())
+                .writer(inventoryItemWriter(dataSource))
                 .listener(stepListener)
                 .faultTolerant()
                 .retry(Exception.class)
@@ -135,8 +133,8 @@ public class BatchConfig {
     
     // Writer Configuration
     @Bean
-    public ItemWriter<InventoryItem> inventoryItemWriter() {
-        return new InventoryItemWriter();
+    public ItemWriter<InventoryItem> inventoryItemWriter(DataSource dataSource) {
+        return new InventoryItemWriter(dataSource);
     }
     
     // Tasklet Beans

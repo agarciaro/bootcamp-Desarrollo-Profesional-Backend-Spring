@@ -71,21 +71,35 @@ public class BatchJobService {
     public JobExecution restartJob(Long executionId) throws Exception {
         logger.info("Restarting job execution: {}", executionId);
         
-        // TODO: Implement job restart logic
-        // Note: jobExecution.stop() method doesn't exist
-        // You would need to use JobOperator or implement custom restart logic
-        
-        throw new UnsupportedOperationException("Job restart not implemented yet");
+        try {
+            // Use JobOperator to restart the job
+            Long newExecutionId = jobOperator.restart(executionId);
+            JobExecution newExecution = jobRepository.getLastJobExecution(newExecutionId.toString(), new JobParameters());
+            
+            logger.info("Job restarted successfully. New execution ID: {}", newExecutionId);
+            return newExecution;
+        } catch (Exception e) {
+            logger.error("Failed to restart job execution {}: {}", executionId, e.getMessage(), e);
+            throw new RuntimeException("Failed to restart job: " + e.getMessage(), e);
+        }
     }
     
     public void stopJob(Long executionId) throws Exception {
         logger.info("Stopping job execution: {}", executionId);
         
-        // TODO: Implement job stop logic
-        // Note: jobExecution.stop() method doesn't exist
-        // You would need to use JobOperator or implement custom stop logic
-        
-        throw new UnsupportedOperationException("Job stop not implemented yet");
+        try {
+            // Use JobOperator to stop the job
+            boolean stopped = jobOperator.stop(executionId);
+            
+            if (stopped) {
+                logger.info("Job execution {} stopped successfully", executionId);
+            } else {
+                logger.warn("Job execution {} was already stopped or not running", executionId);
+            }
+        } catch (Exception e) {
+            logger.error("Failed to stop job execution {}: {}", executionId, e.getMessage(), e);
+            throw new RuntimeException("Failed to stop job: " + e.getMessage(), e);
+        }
     }
     
     public List<JobExecution> getJobHistory(String jobName) {

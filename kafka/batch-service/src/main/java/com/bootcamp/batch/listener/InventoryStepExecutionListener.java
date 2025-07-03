@@ -54,9 +54,22 @@ public class InventoryStepExecutionListener implements StepExecutionListener {
             );
         }
         
-        // TODO: Log skipped exceptions if needed
-        // Note: getSkipExceptions() method doesn't exist in StepExecution
-        // You would need to track skipped items manually if required
+        // Log skipped items and exceptions
+        if (stepExecution.getSkipCount() > 0) {
+            logger.warn("Step skipped {} items", stepExecution.getSkipCount());
+            
+            // Log skipped items from execution context if available
+            Object skippedItems = stepExecution.getExecutionContext().get("skipped.items");
+            if (skippedItems != null) {
+                logger.debug("Skipped items details: {}", skippedItems);
+            }
+            
+            // Log any skip exceptions from the execution context
+            Object skipExceptions = stepExecution.getExecutionContext().get("skip.exceptions");
+            if (skipExceptions != null) {
+                logger.warn("Skip exceptions occurred: {}", skipExceptions);
+            }
+        }
         
         // Save step execution history
         saveStepExecutionHistory(stepExecution);
