@@ -15,6 +15,7 @@ This project demonstrates a complete **reactive microservices architecture** wit
 - **User Service** (Port: 8081) - User management with CRUD operations
 - **Order Service** (Port: 8082) - Order management with service-to-service communication
 - **Notification Service** (Port: 8083) - Event-driven notifications
+- **Analytics Service** (Port: 8084) - Real-time analytics with Kafka Streams
 
 ### Communication Patterns
 - **Reactive REST APIs** - Non-blocking synchronous communication between services using Spring WebFlux
@@ -84,6 +85,10 @@ mvn spring-boot:run
 # 6. Start Notification Service (in a new terminal)
 cd ../notification-service
 mvn spring-boot:run
+
+# 7. Start Analytics Service (in a new terminal)
+cd ../analytics-service
+mvn spring-boot:run
 ```
 
 ### 5. Running with Scripts (Recommended)
@@ -151,6 +156,18 @@ docker-compose -f docker-compose-full.yml down
 ### Notification Service
 - **Health Check**: http://localhost:8083/actuator/health
 - **H2 Console**: http://localhost:8083/h2-console
+
+### Analytics Service
+- **Base URL**: http://localhost:8084/analytics
+- **Dashboard Metrics**: GET http://localhost:8084/analytics/dashboard
+- **Order Analytics**: GET http://localhost:8084/analytics/orders/metrics/{metricType}
+- **User Activity**: GET http://localhost:8084/analytics/users/{userId}/activity
+- **Revenue Analytics**: GET http://localhost:8084/analytics/revenue/{timePeriod}
+- **Real-time Stream**: GET http://localhost:8084/analytics/stream
+- **Alerts**: GET http://localhost:8084/analytics/alerts
+- **Health Check**: http://localhost:8084/analytics/health
+- **Kafka Streams Status**: http://localhost:8084/analytics/streams/status
+- **H2 Console**: http://localhost:8084/h2-console
 
 ### Kafka UI (Docker)
 - **Kafka UI**: http://localhost:80 (when running with Docker Compose)

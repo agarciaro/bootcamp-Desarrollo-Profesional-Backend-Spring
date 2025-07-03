@@ -1,0 +1,79 @@
+server:
+  port: 8084
+
+spring:
+  application:
+    name: analytics-service
+  main:
+    web-application-type: reactive
+  profiles:
+    active: local
+  r2dbc:
+    url: r2dbc:h2:mem:///analyticsdb
+    username: sa
+    password: 
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: analytics-service-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+        spring.json.type.mapping: orderEvent:com.bootcamp.analytics.model.OrderEvent,userEvent:com.bootcamp.analytics.model.UserEvent
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    streams:
+      application-id: analytics-streams-app
+      properties:
+        default.key.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+        default.value.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+        spring.json.trusted.packages: "*"
+        processing.guarantee: exactly_once_v2
+        replication.factor: 1
+        num.stream.threads: 2
+    listener:
+      ack-mode: MANUAL_IMMEDIATE
+      type: single
+      concurrency: 3
+      poll-timeout: 3000
+      retry:
+        enabled: true
+        initial-interval: 1000
+        max-attempts: 3
+        multiplier: 2.0
+
+# Eureka Client Configuration
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+
+# Management endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,kafkastreams
+  endpoint:
+    health:
+      show-details: always
+
+# Logging configuration
+logging:
+  level:
+    com.bootcamp.analytics: DEBUG
+    org.springframework.kafka: INFO
+    org.apache.kafka.streams: DEBUG 
